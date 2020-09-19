@@ -1,0 +1,26 @@
+@import './Shake.scss';
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #535456;
+  font-style: normal;
+  text-decoration: none;
+  color: white;
+  padding: 14px 20px;
+
+  user-select: none;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:active {
+    transform: translateY(5px);
+  }
+
+  &.loading {
+    @include do-shake();
+  }
+}

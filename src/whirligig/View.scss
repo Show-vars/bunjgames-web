@@ -1,0 +1,30 @@
+.view {
+  height: 100%;
+  background-color: #333435;
+
+  display: flex;
+
+  .content {
+    width: 100%;
+    background-color: #31495e;
+    margin: 50px 50px;
+    padding: 40px;
+
+    display: flex;
+    align-items: center;
+  }
+
+  .text {
+    margin: auto;
+    color: #c4c4c4;
+    font-size: 50px;
+    white-space: pre-wrap;
+  }
+
+  .image {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+  }
+
+}

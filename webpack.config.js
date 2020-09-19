@@ -47,7 +47,7 @@ module.exports = {
     contentBase: path.join(__dirname, 'public'),
     hot: true,
     historyApiFallback: {
-      index: '/'
+      index: 'index.html'
     },
   }
 };

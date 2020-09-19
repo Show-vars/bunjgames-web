@@ -14,9 +14,11 @@
   "dependencies": {
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
+    "howler": "^2.2.0",
     "loglevel": "^1.6.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-notifications-component": "^2.4.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "word-wrapper": "^1.0.7"
