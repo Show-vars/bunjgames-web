@@ -14,11 +14,7 @@ const GameCreate = ({onInput, onOpen}) => {
 
         WHIRLIGIG_API.createGame(inputFile.current).then(() => {
             history.push("/whirligig/admin");
-        }).catch(() => {
-            setLoading(false);
-
-            alert("Not Wonderful!");
-        });
+        })
     };
     return <div className={styles.gameCreate}>
         <div className={styles.title}>Create game</div>

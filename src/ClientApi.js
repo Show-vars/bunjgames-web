@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Subscriber from "./Subscriber";
 
 const WHIRLIGIG_TOKEN = "WHIRLIGIG_TOKEN";
 
@@ -10,6 +11,7 @@ export default class ClientApi {
         });
 
         this.game = undefined;
+        this.gameSubscriber = new Subscriber();
 
         this.loadToken();
     }
@@ -22,6 +24,15 @@ export default class ClientApi {
         localStorage.setItem(WHIRLIGIG_TOKEN, JSON.stringify(this.token));
     }
 
+    getSubscriber() {
+        return this.gameSubscriber;
+    }
+
+    updateGame(game) {
+        this.gameSubscriber.fire(game, game.state, state => !state || state !== game.state);
+        this.game = game;
+    }
+
     createGame(inputFile) {
         const formData = new FormData();
         formData.append("game", inputFile.files[0]);
@@ -30,11 +41,11 @@ export default class ClientApi {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
-        }).then(response => {
-            if (response.data) {
-                this.token = response.data.token;
-                this.saveToken();
-            }
+        }).then(result => {
+            this.token = result.data.token;
+            this.saveToken();
+            this.updateGame(result.data);
+            return result.data;
         });
     }
 
@@ -61,6 +72,7 @@ export default class ClientApi {
 
                 if(!oldGame || oldGame.hash !== game.hash) {
                     this.game = result.data;
+                    this.updateGame(result.data);
                 }
 
                 return game;
@@ -77,12 +89,18 @@ export default class ClientApi {
             token: this.token,
             connoisseurs_score: connoisseurs_score,
             viewers_score: viewers_score
-        }).then(result => result.data);
+        }).then(result => {
+            this.updateGame(result.data);
+            return result.data;
+        });
     }
 
     nextState() {
         if (this.hasToken()) {
-            return this.axios.post(`state/next`, {token: this.token}).then(result => result.data);
+            return this.axios.post(`state/next`, {token: this.token}).then(result => {
+                this.updateGame(result.data);
+                return result.data;
+            });
         }
     }
 
@@ -92,7 +110,7 @@ export default class ClientApi {
 
     logout() {
         this.token = null;
+        this.game = undefined;
         this.saveToken();
     }
 }
-

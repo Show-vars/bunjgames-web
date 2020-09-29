@@ -3,9 +3,12 @@ import {useHistory, withRouter} from "react-router-dom";
 import styles from "./Admin.scss";
 import {Link} from "react-router-dom";
 import {Howl, Howler} from 'howler';
+import AwesomeTimer from "../AwesomeTimer";
 
 const Sounds = {
-    sig1: new Howl({src: ['/sounds/sig1.mp3']})
+    sig1: new Howl({src: ['/sounds/sig1.mp3']}),
+    sig2: new Howl({src: ['/sounds/sig2.mp3']}),
+    sig3: new Howl({src: ['/sounds/sig3.mp3']}),
 }
 
 const getStatusName = (status) => {
@@ -160,7 +163,7 @@ const ScoreControl = ({onUpdate, game}) => {
     const updateScore = (connoisseurs_score, viewers_score) => {
         WHIRLIGIG_API.score(connoisseurs_score, viewers_score).then((game) => {
             onUpdate(game);
-        });
+        }).catch(() => "it's fine");
     };
 
     return <div className={styles.scoreControl}>
@@ -212,11 +215,18 @@ const Content = ({onUpdate, game}) => {
         </div>)
 };
 
-const Footer = ({onUpdate, game, time}) => {
+const Footer = ({onUpdate, game, time, timer}) => {
     const onNextClick = () => {
         WHIRLIGIG_API.nextState().then((game) => {
             onUpdate(game);
         });
+    };
+
+    const [isPaused, setPaused] = useState(false);
+
+    const onPause = () => {
+        setPaused(!isPaused);
+        timer.toggle();
     };
 
     return <div className={styles.footer}>
@@ -224,7 +234,7 @@ const Footer = ({onUpdate, game, time}) => {
         <div className={styles.state}>{getStatusName(game.state)}</div>
         <div className={styles.timer}>
             <div className={styles.time}>{time}</div>
-            <div className={styles.button}>Pause</div>
+            <div className={styles.button} onClick={onPause}>{isPaused ? "Resume" : "Pause"}</div>
         </div>
         <div className={[styles.button, styles.next].join(' ')} onClick={onNextClick}>Next</div>
     </div>
@@ -234,54 +244,53 @@ const Footer = ({onUpdate, game, time}) => {
 
 const WhirligigAdmin = () => {
     const history = useHistory();
-    const [game, setGame] = useState(null);
-    const [time, timeDispatch] = useReducer((state, action) => Math.clamp(state + action, 60, 0), 60);
-
-    console.log("RENDER: ", game);
+    const [game, setGame] = useState(WHIRLIGIG_API.getGameCache());
+    const [time, setTime] = useState(0);
+    const [timer] = useState(() => {
+        return new AwesomeTimer()
+    });
 
     if (!WHIRLIGIG_API.hasToken()) {
         history.push("/whirligig/auth");
         return "";
     }
 
-    const onUpdate = (game, oldGame) => {
-        console.log("UPDATE: ", game, oldGame);
+    const onUpdate = (game) => {
         setGame(game);
-
-        if((!oldGame || oldGame.state !== game.state) && game.state === "question_discussion") {
-            Sounds.sig1.play();
-        }
     };
 
-    const updateGame = () => {
-        const oldGame = WHIRLIGIG_API.getGameCache();
+    const onSubscriptionUpdate = (game, stateChanged) => {
+        setGame(game);
 
-        WHIRLIGIG_API.getGame().then((game) => {
-            console.log("FETCH: ", game, oldGame, !oldGame || oldGame.hash !== game.hash, )
-            if(!oldGame || oldGame.hash !== game.hash) {
-                onUpdate(game, oldGame);
-            }
-        });
-
-        const game = WHIRLIGIG_API.getGameCache();
-        if (game && game.state === "question_discussion") {
-            timeDispatch(-1);
-        } else {
-            timeDispatch(60);
+        if(stateChanged && game.state === "question_discussion") {
+            timer.start(60);
         }
     };
 
     useEffect(() => {
-        console.log("EFFECT");
-        updateGame();
-        const timer = setInterval(updateGame, 1000);
-        return () => clearInterval(timer);
+        timer.addTrigger(60, () => Sounds.sig1.play());
+        timer.addTrigger(10, () => Sounds.sig2.play());
+        timer.addTrigger(0, () => Sounds.sig3.play());
+        timer.setCallback(setTime);
+
+        return () => timer.destroy();
     }, []);
+
+    useEffect(() => {
+        const id = WHIRLIGIG_API.getSubscriber().subscribe(onSubscriptionUpdate);
+        return () => WHIRLIGIG_API.getSubscriber().unsubscribe(id);
+    }, [])
+
+    useEffect(() => {
+        WHIRLIGIG_API.getGame();
+        //const timer = setInterval(() => WHIRLIGIG_API.getGame(), 1000);
+        //return () => clearInterval(timer);
+    });
 
     return game ? <div className={styles.admin}>
         <Header game={game}/>
         <Content game={game} onUpdate={onUpdate}/>
-        <Footer game={game} time={time} onUpdate={onUpdate}/>
+        <Footer game={game} time={time} timer={timer} onUpdate={onUpdate}/>
     </div> : "Loading"
 }
 
