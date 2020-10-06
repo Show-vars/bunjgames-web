@@ -1,15 +1,15 @@
 export default class Subscriber {
-    constructor() {
+    constructor(isState = true) {
         this.nextId = 0;
         this.subscribtions = {};
+        this.last = undefined;
+        this.isState = isState;
     }
 
     subscribe(callback) {
         console.log("subscribe")
-        this.subscribtions[this.nextId] = {
-            callback: callback,
-            state: null
-        };
+        this.subscribtions[this.nextId] = callback;
+        if(this.isState && this.last) callback(this.last)
         return this.nextId++;
     }
 
@@ -18,13 +18,10 @@ export default class Subscriber {
         delete this.subscribtions[id];
     }
 
-    fire(payload, state, checker) {
+    fire(payload) {
+        this.last = payload;
         for (const [id, subscription] of Object.entries(this.subscribtions)) {
-            const check = checker(subscription.state);
-            if(check) {
-                this.subscribtions[id].state = state;
-            }
-            subscription.callback(payload, check);
+            subscription(payload, id);
         }
 
         console.log(this.subscribtions)

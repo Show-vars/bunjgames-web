@@ -10,10 +10,12 @@ import WhirligigView from "./whirligig/View.jsx";
 import WhirligigClient from "./whirligig/Client.jsx";
 import ClientApi from "./ClientApi.js";
 
-const WhirligigApi = new ClientApi(BunjGamesConfig.WHIRLIGIG_API_ENDPOINT);
+const WhirligigApi = new ClientApi(BunjGamesConfig.WHIRLIGIG_API_ENDPOINT, BunjGamesConfig.WHIRLIGIG_WS_ENDPOINT);
 window.WHIRLIGIG_API = WhirligigApi;
 
 Math.clamp = (x, a, b) => x > a ? a : x < b ? b : x;
+
+window.css = (...a) => a.join(" ");
 
 const App = () => {
     return <BrowserRouter>

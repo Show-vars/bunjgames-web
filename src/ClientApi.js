@@ -4,33 +4,92 @@ import Subscriber from "./Subscriber";
 const WHIRLIGIG_TOKEN = "WHIRLIGIG_TOKEN";
 
 export default class ClientApi {
-    constructor(endpoint) {
+    constructor(apiEndpoint, wsEndpoint) {
         this.axios = axios.create({
-            baseURL: endpoint,
-            timeout: 1000
+            baseURL: apiEndpoint,
+            timeout: 10000
         });
 
-        this.game = undefined;
+        this.wsEndpoint = wsEndpoint;
         this.gameSubscriber = new Subscriber();
+        this.stateSubscriber = new Subscriber();
+        this.intercomSubscriber = new Subscriber();
+        this.lastState = null;
 
         this.loadToken();
     }
 
+    connect(token = this.token) {
+        return new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => reject(), 5000);
+            this.socket = new WebSocket(this.wsEndpoint + token);
+            console.log("[WS] Connecting as", token);
+            this.socket.onopen = e => {
+                console.log("[WS] Connected", e);
+                this.token = token;
+                this.saveToken();
+            }
+            this.socket.onmessage = e => {
+                console.log("[WS] Message", e);
+                if(timeout) {
+                    clearTimeout(timeout);
+                    resolve();
+                }
+                this.onData(JSON.parse(e.data));
+            }
+            this.socket.onclose = e => {
+                console.log("[WS] Close", e);
+                reject();
+            }
+            this.socket.onerror = e => {
+                console.log("[WS] Error", e);
+                reject();
+            }
+        });
+    }
+
+    isConnected() {
+        return Boolean(this.socket && this.socket.readyState === WebSocket.OPEN);
+    }
+
+    onData(data) {
+        if(!data || !data.type) return;
+
+        if(data.type === "game") {
+            this.game = data.message;
+            if (this.lastState !== this.game.state) {
+                this.lastState = this.game.state;
+                this.stateSubscriber.fire(this.game);
+            }
+            this.gameSubscriber.fire(this.game);
+        } else if(data.type === "intercom") {
+            this.intercomSubscriber.fire(data.message);
+        }
+    }
+
     loadToken() {
-        this.token = JSON.parse(localStorage.getItem(WHIRLIGIG_TOKEN));
+        try {
+            this.token = JSON.parse(localStorage.getItem(WHIRLIGIG_TOKEN));
+        } catch (e) {
+            this.token = null;
+        }
     }
 
     saveToken() {
         localStorage.setItem(WHIRLIGIG_TOKEN, JSON.stringify(this.token));
     }
 
-    getSubscriber() {
+    getGameSubscriber() {
         return this.gameSubscriber;
     }
 
-    updateGame(game) {
-        this.gameSubscriber.fire(game, game.state, state => !state || state !== game.state);
-        this.game = game;
+    getStateSubscriber() {
+        return this.stateSubscriber;
+    }
+
+
+    getIntercomSubscriber() {
+        return this.intercomSubscriber;
     }
 
     createGame(inputFile) {
@@ -44,12 +103,11 @@ export default class ClientApi {
         }).then(result => {
             this.token = result.data.token;
             this.saveToken();
-            this.updateGame(result.data);
             return result.data;
         });
     }
 
-    openGame(token) {
+    /*openGame(token) {
         return this.getGame(token).then(game => {
             if (game) {
                 this.token = token;
@@ -58,50 +116,66 @@ export default class ClientApi {
 
             return game;
         });
-    }
-
-    getGameCache() {
-        return this.game;
-    }
-
-    getGame() {
-        if (this.hasToken()) {
-            return this.axios.get(`game?token=${this.token}`).then(result => {
-                const oldGame = this.game;
-                const game = result.data;
-
-                if(!oldGame || oldGame.hash !== game.hash) {
-                    this.game = result.data;
-                    this.updateGame(result.data);
-                }
-
-                return game;
-            });
-        }
-    }
+    }*/
 
     score(connoisseurs_score, viewers_score) {
-        if (!this.hasToken() || connoisseurs_score < 0 || connoisseurs_score > 6 || viewers_score < 0 || viewers_score > 6) {
-            return new Promise(((resolve, reject) => reject()));
-        }
+        if (!this.isConnected()) return;
 
-        return this.axios.post(`score`, {
-            token: this.token,
-            connoisseurs_score: connoisseurs_score,
-            viewers_score: viewers_score
-        }).then(result => {
-            this.updateGame(result.data);
-            return result.data;
-        });
+        this.socket.send(JSON.stringify({
+            method: "change_score",
+            params: {connoisseurs_score, viewers_score}
+        }));
+    }
+
+    calcTime() {
+        const serverTime = this.game.timer_time;
+        const serverPausedTime = this.game.timer_paused_time;
+        const isPaused = this.game.timer_paused;
+        const now = Date.now();
+
+        let time;
+        if (isPaused) {
+            time = Math.round((serverTime - serverPausedTime) / 1000);
+        } else {
+            time = Math.round((serverTime - now) / 1000);
+        }
+        return Math.clamp(time,60,0);
+    }
+
+    timer(paused) {
+        if (!this.isConnected()) return;
+
+        this.socket.send(JSON.stringify({
+            method: "change_timer",
+            params: {paused}
+        }));
+    }
+
+    answerCorrect(isCorrect) {
+        if (!this.isConnected()) return;
+
+        this.socket.send(JSON.stringify({
+            method: "answer_correct",
+            params: {is_correct: Boolean(isCorrect)}
+        }));
     }
 
     nextState() {
-        if (this.hasToken()) {
-            return this.axios.post(`state/next`, {token: this.token}).then(result => {
-                this.updateGame(result.data);
-                return result.data;
-            });
-        }
+        if (!this.isConnected()) return;
+
+        this.socket.send(JSON.stringify({
+            method: "next_state",
+            params: {}
+        }));
+    }
+
+    intercom(message) {
+        if (!this.isConnected()) return;
+
+        this.socket.send(JSON.stringify({
+            method: "intercom",
+            message: message
+        }));
     }
 
     hasToken() {
@@ -112,5 +186,6 @@ export default class ClientApi {
         this.token = null;
         this.game = undefined;
         this.saveToken();
+        if (this.isConnected()) this.socket.close();
     }
 }

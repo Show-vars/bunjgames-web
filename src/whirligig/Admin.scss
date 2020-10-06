@@ -1,7 +1,5 @@
 @import "./Common.scss";
 
-$baseTextColor: #c4c4c4;
-
 .admin {
   height: 100%;
   display: flex;
@@ -28,8 +26,15 @@ $baseTextColor: #c4c4c4;
 
     .nav {
       display: flex;
+      align-items: center;
       a {
         margin: 0 0 0 10px;
+      }
+
+      .mute {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
       }
     }
 
@@ -65,6 +70,10 @@ $baseTextColor: #c4c4c4;
           max-width: 400px;
         }
 
+        audio {
+          height: 40px !important;
+        }
+
 
         .question {
           div:first-child {
@@ -77,7 +86,7 @@ $baseTextColor: #c4c4c4;
         }
 
         .answer {
-
+          margin-top: 50px;
         }
       }
     }
@@ -87,6 +96,7 @@ $baseTextColor: #c4c4c4;
       border-left: 10px solid #333435;
 
       width: 30%;
+      min-width: 30%;
       overflow: hidden;
 
       display: flex;
@@ -206,6 +216,13 @@ $baseTextColor: #c4c4c4;
 
     .next {
       font-size: 50px;
+      margin: 0 0 0 40px;
+    }
+
+    .gong {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
       margin: 0 0 0 40px;
     }
   }

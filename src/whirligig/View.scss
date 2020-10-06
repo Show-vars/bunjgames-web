@@ -1,30 +1,55 @@
+@import "./Common.scss";
+
 .view {
   height: 100%;
   background-color: #333435;
 
   display: flex;
+  flex-direction: column;
+
 
   .content {
-    width: 100%;
-    background-color: #31495e;
-    margin: 50px 50px;
-    padding: 40px;
+    height: 100%;
 
     display: flex;
+    justify-content: center;
     align-items: center;
-  }
 
-  .text {
-    margin: auto;
-    color: #c4c4c4;
-    font-size: 50px;
-    white-space: pre-wrap;
-  }
+    .message {
+      width: 100%;
 
-  .image {
-    height: 100%;
-    width: 100%;
-    object-fit: contain;
+      p {
+        margin: auto;
+        color: $baseTextColor;
+        font-size: 50px;
+        white-space: pre-wrap;
+        text-align: center;
+      }
+
+      img {
+        display: block;
+        height: 100%;
+        width: 100%;
+        object-fit: contain;
+      }
+
+      audio {
+
+      }
+
+      video {
+        height: 100%;
+        width: 100%;
+      }
+    }
+
+    .score {
+      color: $baseTextColor;
+      text-align: center;
+      font-size: 30vw;
+      margin-top: 25px;
+      font-weight: bold;
+    }
   }
 
 }

@@ -1,15 +1,8 @@
-import React, {useState, useReducer, useEffect} from "react";
-import {useHistory, withRouter} from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import {useHistory} from "react-router-dom";
 import styles from "./Admin.scss";
 import {Link} from "react-router-dom";
-import {Howl, Howler} from 'howler';
-import AwesomeTimer from "../AwesomeTimer";
-
-const Sounds = {
-    sig1: new Howl({src: ['/sounds/sig1.mp3']}),
-    sig2: new Howl({src: ['/sounds/sig2.mp3']}),
-    sig3: new Howl({src: ['/sounds/sig3.mp3']}),
-}
+import {AudioPlayer, ImagePlayer, VideoPlayer} from "./Common.jsx";
 
 const getStatusName = (status) => {
     switch (status) {
@@ -25,29 +18,22 @@ const getStatusName = (status) => {
             return "Asking";
         case 'question_discussion':
             return "Discussion";
-        case 'question_end':
+        case 'answer':
             return "Answer";
+        case 'right_answer':
+            return "Right answer";
+        case 'question_end':
+            return "Question end";
         case 'end':
             return "Game over";
     }
 }
 
-const getMediaUrl = (game, url) => url.startsWith("/") ? `${BunjGamesConfig.WHIRLIGIG_MEDIA}${game.token}${url}` : url;
-
-const ImagePlayer = ({game, url}) => (
-    <img src={getMediaUrl(game, url)} alt="Image"/>
-);
-
-const AudioPlayer = ({game, url}) => (
-    <audio controls src={getMediaUrl(game, url)}> Your browser does not support the <code>audio</code> element. </audio>
-);
-
-const VideoPlayer = ({game, url}) => (
-    <video controls src={getMediaUrl(game, url)}> Your browser does not support the <code>video</code> element. </video>
-);
-
 const Header = ({game}) => {
     const history = useHistory();
+
+    const onSoundStop = () => WHIRLIGIG_API.intercom("sound_stop");
+
     const onLogout = () => {
         WHIRLIGIG_API.logout();
         history.push("/whirligig/auth");
@@ -56,6 +42,7 @@ const Header = ({game}) => {
         <div className={styles.logo}>Admin dashboard</div>
         <div className={styles.token}>{game.token.toUpperCase()}</div>
         <div className={styles.nav}>
+            <div className={css(styles.button, styles.mute)} onClick={onSoundStop}><i className="fas fa-volume-mute"/></div>
             <Link className={styles.button} to={"/"}>Home</Link>
             <Link className={styles.button} to={"/whirligig/view"}>View</Link>
             <a className={styles.button} onClick={onLogout}>Logout</a>
@@ -85,17 +72,17 @@ const BigQuestion = ({game, question}) => {
         <div className={styles.question}>
             <div>Current question: {description}</div>
             <div>{text && <p>{text}</p>}</div>
-            <div>{image && <ImagePlayer game={game} url={image}/>}</div>
-            <div>{audio && <AudioPlayer game={game} url={audio}/>}</div>
-            <div>{video && <VideoPlayer game={game} url={video}/>}</div>
+            <div>{image && <ImagePlayer controls={true} game={game} url={image}/>}</div>
+            <div>{audio && <AudioPlayer controls={true} game={game} url={audio}/>}</div>
+            <div>{video && <VideoPlayer controls={true} game={game} url={video}/>}</div>
         </div>
 
         <div className={styles.answer}>
             <div>Answer: {answer_description}</div>
             <div>{answer_text && <p>{answer_text}</p>}</div>
-            <div>{answer_image && <ImagePlayer game={game} url={answer_image}/>}</div>
-            <div>{answer_audio && <AudioPlayer game={game} url={answer_audio}/>}</div>
-            <div>{answer_video && <VideoPlayer game={game} url={answer_video}/>}</div>
+            <div>{answer_image && <ImagePlayer controls={true} game={game} url={answer_image}/>}</div>
+            <div>{answer_audio && <AudioPlayer controls={true} game={game} url={answer_audio}/>}</div>
+            <div>{answer_video && <VideoPlayer controls={true} game={game} url={answer_video}/>}</div>
         </div>
     </div>
 }
@@ -103,13 +90,13 @@ const BigQuestion = ({game, question}) => {
 const BigItem = ({game}) => {
     const {cur_item, cur_question} = game;
 
-    if (cur_item === null) {
+    if (!cur_item || !cur_question) {
         return <div className={styles.bigitem}/>;
     }
 
     return <div className={styles.bigitem}>
-        <BigInfo item={game.items[cur_item]}/>
-        <BigQuestion game={game} question={game.items[cur_item].questions[cur_question]}/>
+        <BigInfo item={cur_item}/>
+        <BigQuestion game={game} question={cur_question}/>
     </div>
 };
 
@@ -159,11 +146,9 @@ const Items = ({items}) => (
     </div>
 );
 
-const ScoreControl = ({onUpdate, game}) => {
+const ScoreControl = ({game}) => {
     const updateScore = (connoisseurs_score, viewers_score) => {
-        WHIRLIGIG_API.score(connoisseurs_score, viewers_score).then((game) => {
-            onUpdate(game);
-        }).catch(() => "it's fine");
+        WHIRLIGIG_API.score(connoisseurs_score, viewers_score);
     };
 
     return <div className={styles.scoreControl}>
@@ -198,45 +183,66 @@ const ScoreControl = ({onUpdate, game}) => {
     </div>
 };
 
-const RightPanel = ({onUpdate, game, items}) => (
+const RightPanel = ({game, items}) => (
     <div className={styles.rightPanel}>
         <Items items={items}/>
-        <ScoreControl onUpdate={onUpdate} game={game}/>
+        <ScoreControl game={game}/>
     </div>
 )
 
-const Content = ({onUpdate, game}) => {
+const Content = ({ game}) => {
     const items = game.items || [];
 
     return (
         <div className={styles.content}>
             <BigItem game={game}/>
-            <RightPanel onUpdate={onUpdate} game={game} items={items}/>
+            <RightPanel game={game} items={items}/>
         </div>)
 };
 
-const Footer = ({onUpdate, game, time, timer}) => {
-    const onNextClick = () => {
-        WHIRLIGIG_API.nextState().then((game) => {
-            onUpdate(game);
-        });
-    };
+const Footer = ({game}) => {
+    const [time, setTime] = useState();
 
-    const [isPaused, setPaused] = useState(false);
+    const onGong = () => WHIRLIGIG_API.intercom("gong");
+    const onAnswerClick = (isCorrect) => WHIRLIGIG_API.answerCorrect(isCorrect);
+    const onNextClick = () => WHIRLIGIG_API.nextState();
+    const onPause = () => WHIRLIGIG_API.timer(!game.timer_paused);
 
-    const onPause = () => {
-        setPaused(!isPaused);
-        timer.toggle();
-    };
+    useEffect(() => {
+        var timer;
+        if(game.timer_time > 0) {
+            setTime(WHIRLIGIG_API.calcTime());
+            timer = setInterval(() => {
+                const time = WHIRLIGIG_API.calcTime();
+                if(game.state === "question_discussion" && time <= 0) {
+                    WHIRLIGIG_API.nextState();
+                }
+                setTime(time)
+            }, 1000);
+        }
+
+        return () => timer && clearInterval(timer);
+    });
+
+    let nextButtonContent;
+    if(game.state === "right_answer") {
+        nextButtonContent = [
+            <div className={css(styles.button, styles.next)} onClick={() => onAnswerClick(true)}>Right</div>,
+            <div className={css(styles.button, styles.next)} onClick={() => onAnswerClick(false)}>Wrong</div>
+        ];
+    } else if(game.state !== "end") {
+        nextButtonContent = <div className={css(styles.button, styles.next)} onClick={onNextClick}>Next</div>
+    }
 
     return <div className={styles.footer}>
         <div className={styles.score}>{game.connoisseurs_score} : {game.viewers_score}</div>
         <div className={styles.state}>{getStatusName(game.state)}</div>
-        <div className={styles.timer}>
+        {game.timer_time > 0 && <div className={styles.timer}>
             <div className={styles.time}>{time}</div>
-            <div className={styles.button} onClick={onPause}>{isPaused ? "Resume" : "Pause"}</div>
-        </div>
-        <div className={[styles.button, styles.next].join(' ')} onClick={onNextClick}>Next</div>
+            <div className={styles.button} onClick={onPause}>{game.timer_paused ? "Resume" : "Pause"}</div>
+        </div>}
+        <div className={css(styles.button, styles.gong)} onClick={onGong}>Gong!</div>
+        {nextButtonContent}
     </div>
 
 };
@@ -244,53 +250,24 @@ const Footer = ({onUpdate, game, time, timer}) => {
 
 const WhirligigAdmin = () => {
     const history = useHistory();
-    const [game, setGame] = useState(WHIRLIGIG_API.getGameCache());
-    const [time, setTime] = useState(0);
-    const [timer] = useState(() => {
-        return new AwesomeTimer()
-    });
+    const [game, setGame] = useState();
 
-    if (!WHIRLIGIG_API.hasToken()) {
+    if (!WHIRLIGIG_API.isConnected()) {
         history.push("/whirligig/auth");
         return "";
     }
 
-    const onUpdate = (game) => {
-        setGame(game);
-    };
-
-    const onSubscriptionUpdate = (game, stateChanged) => {
-        setGame(game);
-
-        if(stateChanged && game.state === "question_discussion") {
-            timer.start(60);
-        }
-    };
-
     useEffect(() => {
-        timer.addTrigger(60, () => Sounds.sig1.play());
-        timer.addTrigger(10, () => Sounds.sig2.play());
-        timer.addTrigger(0, () => Sounds.sig3.play());
-        timer.setCallback(setTime);
-
-        return () => timer.destroy();
-    }, []);
-
-    useEffect(() => {
-        const id = WHIRLIGIG_API.getSubscriber().subscribe(onSubscriptionUpdate);
-        return () => WHIRLIGIG_API.getSubscriber().unsubscribe(id);
+        const id = WHIRLIGIG_API.getGameSubscriber().subscribe(setGame);
+        return () => WHIRLIGIG_API.getGameSubscriber().unsubscribe(id);
     }, [])
 
-    useEffect(() => {
-        WHIRLIGIG_API.getGame();
-        //const timer = setInterval(() => WHIRLIGIG_API.getGame(), 1000);
-        //return () => clearInterval(timer);
-    });
+    console.log(game);
 
     return game ? <div className={styles.admin}>
         <Header game={game}/>
-        <Content game={game} onUpdate={onUpdate}/>
-        <Footer game={game} time={time} timer={timer} onUpdate={onUpdate}/>
+        <Content game={game}/>
+        <Footer game={game}/>
     </div> : "Loading"
 }
 

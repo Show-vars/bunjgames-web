@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef} from "react";
 import { useHistory } from "react-router-dom";
 import styles from "./Auth.scss";
-import {Link} from "react-router-dom";
 
 const GameCreate = ({onInput, onOpen}) => {
     const [loading, setLoading] = useState(false);
@@ -13,9 +12,15 @@ const GameCreate = ({onInput, onOpen}) => {
         setLoading(true);
 
         WHIRLIGIG_API.createGame(inputFile.current).then(() => {
-            history.push("/whirligig/admin");
-        })
+            WHIRLIGIG_API.connect().then(() => {
+                history.push("/whirligig/admin");
+            })
+        }).catch((e) => {
+            console.log(e);
+            alert("Wonderful but not exactly!");
+        });
     };
+
     return <div className={styles.gameCreate}>
         <div className={styles.title}>Create game</div>
         <div>
@@ -33,10 +38,9 @@ const GameOpen = () => {
     const onOpen = () => {
         setLoading(true);
 
-        WHIRLIGIG_API.openGame(token).then((response) => {
+        WHIRLIGIG_API.connect(token).then(() => {
             history.push("/whirligig/view");
-        }).catch((error) => {
-            console.log(error);
+        }).catch(() => {
             setLoading(false);
 
             alert("Not Wonderful!");
@@ -54,14 +58,25 @@ const GameOpen = () => {
 
 const Auth = () => {
     const history = useHistory();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
        if(WHIRLIGIG_API.hasToken()) {
-           WHIRLIGIG_API.getGame(WHIRLIGIG_API.token).then(() => {
-               history.push("/whirligig/admin");
+           WHIRLIGIG_API.connect().then(() => {
+               if(history.length > 0) {
+                   history.goBack();
+               } else {
+                   history.push("/whirligig/admin");
+               }
+           }).catch(() => {
+               setLoading(false)
            })
+       } else {
+           setLoading(false);
        }
     }, []);
+
+    if(loading) return "LoAdInG";
 
     return <div className={styles.auth}>
         <GameCreate/>
