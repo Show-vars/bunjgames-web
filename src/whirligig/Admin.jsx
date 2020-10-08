@@ -205,7 +205,7 @@ const Footer = ({game}) => {
 
     const onGong = () => WHIRLIGIG_API.intercom("gong");
     const onAnswerClick = (isCorrect) => WHIRLIGIG_API.answerCorrect(isCorrect);
-    const onNextClick = () => WHIRLIGIG_API.nextState();
+    const onNextClick = () => WHIRLIGIG_API.nextState(game.state);
     const onPause = () => WHIRLIGIG_API.timer(!game.timer_paused);
 
     useEffect(() => {
@@ -215,7 +215,7 @@ const Footer = ({game}) => {
             timer = setInterval(() => {
                 const time = WHIRLIGIG_API.calcTime();
                 if(game.state === "question_discussion" && time <= 0) {
-                    WHIRLIGIG_API.nextState();
+                    WHIRLIGIG_API.nextState("question_discussion");
                 }
                 setTime(time)
             }, 1000);
@@ -230,7 +230,7 @@ const Footer = ({game}) => {
             <div className={css(styles.button, styles.next)} onClick={() => onAnswerClick(true)}>Right</div>,
             <div className={css(styles.button, styles.next)} onClick={() => onAnswerClick(false)}>Wrong</div>
         ];
-    } else if(game.state !== "end") {
+    } else if(game.state !== "question_whirligig" && game.state !== "end") {
         nextButtonContent = <div className={css(styles.button, styles.next)} onClick={onNextClick}>Next</div>
     }
 
@@ -261,8 +261,6 @@ const WhirligigAdmin = () => {
         const id = WHIRLIGIG_API.getGameSubscriber().subscribe(setGame);
         return () => WHIRLIGIG_API.getGameSubscriber().unsubscribe(id);
     }, [])
-
-    console.log(game);
 
     return game ? <div className={styles.admin}>
         <Header game={game}/>

@@ -3,6 +3,7 @@ import styles from "./View.scss";
 import {useHistory} from "react-router-dom";
 import {AudioPlayer, ImagePlayer, VideoPlayer} from "./Common.jsx";
 import {Howl, Howler} from 'howler';
+import Whirligig from "./Whirligig.jsx";
 
 const isQuestionAvailable = (game) => {
     const {cur_question} = game;
@@ -16,6 +17,10 @@ const isAnswerAvailable = (game) => {
 
     return ["right_answer"].includes(game.state)
         && ["answer_text", "answer_image", "answer_audio", "answer_video"].some(v => cur_question[v]);
+}
+
+const isWhirligigAvailable = (game) => {
+    return ["question_whirligig"].includes(game.state);
 }
 
 const QuestionsEndMusic = {
@@ -65,10 +70,22 @@ const QuestionMessage = ({game, text, image, audio, video}) => {
 }
 
 const Content = ({game}) => {
+    const [angle, setAngle] = useState(Math.randomRange(0, 2 * Math.PI));
     const {cur_question} = game;
+    const onWhirligigReady = (angle) => {
+        Music.whirligig.stop();
+        setTimeout(function() {
+            setAngle(angle);
+            if (isWhirligigAvailable(game)) {
+                WHIRLIGIG_API.nextState("question_whirligig");
+            }
+        }.bind(this), 3000);
+    }
 
     let content;
-    if (isQuestionAvailable(game)) {
+    if (isWhirligigAvailable(game)) {
+        content = <Whirligig game={game} angle={angle} callback={onWhirligigReady}/>
+    } else if (isQuestionAvailable(game)) {
         const {text, image, audio, video} = cur_question;
         content = <QuestionMessage
             game={game} text={text} image={image} audio={audio} video={video}

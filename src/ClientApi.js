@@ -160,12 +160,12 @@ export default class ClientApi {
         }));
     }
 
-    nextState() {
+    nextState(fromState=null) {
         if (!this.isConnected()) return;
 
         this.socket.send(JSON.stringify({
             method: "next_state",
-            params: {}
+            params: {"from_state": fromState}
         }));
     }
 
