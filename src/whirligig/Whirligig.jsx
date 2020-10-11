@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from "react";
 import Konva from "konva";
 import styles from "./Whirligig.scss";
 
-const Whirligig = ({game, angle, callback}) => {
+const Whirligig = ({game, callback}) => {
     const container = useRef(null);
 
     useEffect(() => {
@@ -28,7 +28,9 @@ const Whirligig = ({game, angle, callback}) => {
         const arrows = new Map();
         const items = new Map();
 
-        game.items.forEach((i, index) => {
+        for (let i=0; i < game.items.length; i++) {
+            const item = game.items[i];
+
             const bar = new Konva.Line({
                 stroke: 'yellow',
                 strokeWidth: 4
@@ -36,29 +38,28 @@ const Whirligig = ({game, angle, callback}) => {
             bars.push(bar);
             layer.add(bar);
 
-            if (i.is_processed) {
+            if (item.is_processed) {
                 const arrow = new Konva.Arrow({
                     stroke: 'yellow',
                     strokeWidth: 6,
                     fill: "yellow"
                 });
-                arrows.set(index, arrow);
+                arrows.set(i, arrow);
                 layer.add(arrow);
             } else {
-                //const text =
-                const item = new Konva.Text({
+                const text = new Konva.Text({
                     align: "center",
                     verticalAlign: "middle",
                     fill: "white",
                     fontSize: 20,
                     fontStyle: "bold",
-                    text: i.name,
+                    text: item.name,
                     wrap: "char"
                 })
-                items.set(index, item);
-                layer.add(item);
+                items.set(i, text);
+                layer.add(text);
             }
-        });
+        }
 
         const arrow = new Konva.Line({
             stroke: "red",
@@ -78,10 +79,10 @@ const Whirligig = ({game, angle, callback}) => {
             rect = content.getBoundingClientRect();
         }
 
-        let whirligigAngle = angle;
+        let whirligigAngle = 0;
 
         const t = Math.randomRange(30, 43);
-        const reqAngle = sectorAngle * game.cur_item_idx + Math.random() * sectorAngle;
+        const reqAngle = sectorAngle * game.cur_random_item_idx + Math.random() * sectorAngle;
         const S = Math.abs(Math.angleNormalize(whirligigAngle) - reqAngle) + Math.randomRangeInt(20, 30) * 2 * Math.PI;
         const v0 = S / (t - t/2);
         const a = -v0/t;
@@ -97,9 +98,9 @@ const Whirligig = ({game, angle, callback}) => {
             const centerY = stage.height() / 2;
 
             vi = vi > 0 ? vi + a * delta : 0;
-            whirligigAngle = whirligigAngle + vi * delta;
+            whirligigAngle = Math.angleNormalize(whirligigAngle + vi * delta);
             if (vi <= 0) {
-                callback(whirligigAngle);
+                callback();
                 anim.stop();
             }
 
@@ -162,7 +163,12 @@ const Whirligig = ({game, angle, callback}) => {
         anim.start();
 
         window.addEventListener('resize', onResize);
-    })
+
+        return () => {
+            anim.stop();
+            window.removeEventListener('resize', onResize);
+        }
+    }, [])
 
     return <div className={styles.whirligig} ref={container}/>
 };

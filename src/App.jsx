@@ -20,6 +20,10 @@ Math.angleNormalize = (a) => {
     const normalized = a % (2 * Math.PI);
     return normalized < 0 ? 2 * Math.PI + normalized : normalized
 }
+Math.normalize = (a, norm) => {
+    const normalized = a % norm;
+    return normalized < 0 ? norm + normalized : normalized
+}
 
 window.css = (...a) => a.join(" ");
 

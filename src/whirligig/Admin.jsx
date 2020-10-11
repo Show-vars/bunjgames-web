@@ -230,7 +230,7 @@ const Footer = ({game}) => {
             <div className={css(styles.button, styles.next)} onClick={() => onAnswerClick(true)}>Right</div>,
             <div className={css(styles.button, styles.next)} onClick={() => onAnswerClick(false)}>Wrong</div>
         ];
-    } else if(game.state !== "question_whirligig" && game.state !== "end") {
+    } else if(game.state !== "end") {
         nextButtonContent = <div className={css(styles.button, styles.next)} onClick={onNextClick}>Next</div>
     }
 

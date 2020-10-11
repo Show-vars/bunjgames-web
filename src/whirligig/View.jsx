@@ -70,21 +70,19 @@ const QuestionMessage = ({game, text, image, audio, video}) => {
 }
 
 const Content = ({game}) => {
-    const [angle, setAngle] = useState(Math.randomRange(0, 2 * Math.PI));
     const {cur_question} = game;
-    const onWhirligigReady = (angle) => {
+    const onWhirligigReady = () => {
         Music.whirligig.stop();
         setTimeout(function() {
-            setAngle(angle);
             if (isWhirligigAvailable(game)) {
-                WHIRLIGIG_API.nextState("question_whirligig");
+                //WHIRLIGIG_API.nextState("question_whirligig");
             }
         }.bind(this), 3000);
     }
 
     let content;
     if (isWhirligigAvailable(game)) {
-        content = <Whirligig game={game} angle={angle} callback={onWhirligigReady}/>
+        content = <Whirligig game={game} callback={onWhirligigReady}/>
     } else if (isQuestionAvailable(game)) {
         const {text, image, audio, video} = cur_question;
         content = <QuestionMessage
