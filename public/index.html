@@ -7,18 +7,18 @@
     <script src="https://kit.fontawesome.com/9ef9ddbf92.js" crossorigin="anonymous"></script>
     <script>
         const Hosts = {
-            web: "https://api.games.bunj.app/",
-            ws: "wss://api.games.bunj.app/",
+            web: "http://127.0.0.1:8000/",
+            ws: "ws://127.0.0.1:8000/",
         }
 
         window.BunjGamesConfig = {
             WHIRLIGIG_MEDIA: Hosts.web + "media/whirligig/",
             WHIRLIGIG_API_ENDPOINT: Hosts.web + "whirligig/v1/",
-            WHIRLIGIG_WS_ENDPOINT: Hosts.ws + "ws/",
+            WHIRLIGIG_WS_ENDPOINT: Hosts.ws + "whirligig/ws/",
 
             JEOPARDY_MEDIA: Hosts.web + "media/jeopardy/",
             JEOPARDY_API_ENDPOINT: Hosts.web + "jeopardy/v1/",
-            JEOPARDY_WS_ENDPOINT: Hosts.ws + "ws/",
+            JEOPARDY_WS_ENDPOINT: Hosts.ws + "jeopardy/ws/",
         };
     </script>
 </head>

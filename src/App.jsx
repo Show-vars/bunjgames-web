@@ -8,13 +8,10 @@ import WhirligigAuth from "./whirligig/Auth.jsx";
 import WhirligigAdmin from "./whirligig/Admin.jsx";
 import WhirligigView from "./whirligig/View.jsx";
 import WhirligigClient from "./whirligig/Client.jsx";
-import ClientApi from "./GameClient.js";
+import WhirligigApi from "./whirligig/WhirligigApi.js";
 
-const WhirligigApi = new WhirligigClient(BunjGamesConfig.WHIRLIGIG_API_ENDPOINT, BunjGamesConfig.WHIRLIGIG_WS_ENDPOINT);
-const JeopardyApi = new JeopardyClient(BunjGamesConfig.JEOPARDY_API_ENDPOINT, BunjGamesConfig.JEOPARDY_WS_ENDPOINT);
-
-window.WHIRLIGIG_API = WhirligigApi;
-window.JEOPARDY_API = JeopardyApi;
+window.WHIRLIGIG_API = new WhirligigApi(BunjGamesConfig.WHIRLIGIG_API_ENDPOINT, BunjGamesConfig.WHIRLIGIG_WS_ENDPOINT);
+//window.JEOPARDY_API = new JeopardyClient(BunjGamesConfig.JEOPARDY_API_ENDPOINT, BunjGamesConfig.JEOPARDY_WS_ENDPOINT);
 
 Math.clamp = (x, a, b) => x > a ? a : x < b ? b : x;
 Math.randomRange = (min, max) => Math.random() * (max - min) + min;

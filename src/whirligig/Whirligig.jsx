@@ -83,7 +83,7 @@ const Whirligig = ({game, callback}) => {
 
         const t = Math.randomRange(30, 43);
         const reqAngle = sectorAngle * game.cur_random_item_idx + Math.random() * sectorAngle;
-        const S = Math.abs(Math.angleNormalize(whirligigAngle) - reqAngle) + Math.randomRangeInt(20, 30) * 2 * Math.PI;
+        const S = Math.abs(Math.angleNormalize(whirligigAngle) - reqAngle) + Math.randomRangeInt(35, 50) * 2 * Math.PI;
         const v0 = S / (t - t/2);
         const a = -v0/t;
 
@@ -116,7 +116,7 @@ const Whirligig = ({game, callback}) => {
                 const angle = sectorAngle * index;
                 b.points([
                     centerX, centerY,
-                    centerX + radius * Math.sin(angle), centerY + radius * Math.cos(angle)
+                    centerX + radius * Math.sin(Math.PI + angle), centerY + radius * Math.cos(Math.PI + angle)
                 ])
             });
 
