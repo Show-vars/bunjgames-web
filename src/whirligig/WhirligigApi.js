@@ -1,8 +1,8 @@
-import GameClient from "../GameClient.js";
+import GameApi from "../GameApi.js";
 
 const WHIRLIGIG_TOKEN = "WHIRLIGIG_TOKEN";
 
-export default class WhirligigApi extends GameClient {
+export default class WhirligigApi extends GameApi {
     constructor(apiEndpoint, wsEndpoint) {
         super(apiEndpoint, wsEndpoint, WHIRLIGIG_TOKEN);
     }

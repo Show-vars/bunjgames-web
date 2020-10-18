@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import styles from "./View.scss";
 import {useHistory} from "react-router-dom";
-import {AudioPlayer, ImagePlayer, VideoPlayer} from "./Common.jsx";
+import {AudioPlayer, ImagePlayer, VideoPlayer} from "../Common.jsx";
 import {Howl, Howler} from 'howler';
 import Whirligig from "./Whirligig.jsx";
 

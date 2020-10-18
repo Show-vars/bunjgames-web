@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Subscriber from "./Subscriber";
 
-export default class GameClient {
+export default class GameApi {
     constructor(apiEndpoint, wsEndpoint, tokenName) {
         this.axios = axios.create({
             baseURL: apiEndpoint,

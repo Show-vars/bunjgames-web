@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import {useHistory} from "react-router-dom";
 import styles from "./Admin.scss";
 import {Link} from "react-router-dom";
-import {AudioPlayer, ImagePlayer, VideoPlayer} from "./Common.jsx";
+import {AudioPlayer, ImagePlayer, VideoPlayer} from "../Common.jsx";
 
 const getStatusName = (status) => {
     switch (status) {
