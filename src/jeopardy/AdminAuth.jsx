@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import { useHistory } from "react-router-dom";
 import styles from "./AdminAuth.scss";
+import {Loading} from "../Common.jsx";
 
 const GameCreate = ({onInput, onOpen}) => {
     const [loading, setLoading] = useState(false);
@@ -76,7 +77,7 @@ const AdminAuth = () => {
         }
     }, []);
 
-    if(loading) return "LoAdInG";
+    if(loading) return <Loading/>
 
     return <div className={styles.auth}>
         <GameCreate/>

@@ -4,11 +4,12 @@ import {useHistory} from "react-router-dom";
 import {AudioPlayer, ImagePlayer, VideoPlayer} from "../Common.jsx";
 import {Howl, Howler} from 'howler';
 import Whirligig from "./Whirligig.jsx";
+import {Loading} from "../Common.jsx";
 
 const isQuestionAvailable = (game) => {
     const {cur_question} = game;
 
-    return ["question_start", "question_discussion", "answer"].includes(game.state)
+    return ["question_start", "question_discussion", "answer", "extra_minute", "club_help"].includes(game.state)
         && ["text", "image", "audio", "video"].some(v => cur_question[v]);
 }
 
@@ -114,7 +115,7 @@ const WhirligigView = () => {
     const triggerTimerSound = (time) => {
         if (!game.cur_item) return;
 
-        if (game.cur_item.type === "standard") {
+        if (game.state === "extra_minute" || game.state !== "club_help" && game.cur_item.type === "standard") {
             switch (time) {
                 case 60:
                     Sounds.sig1.play();
@@ -197,7 +198,7 @@ const WhirligigView = () => {
     }, []);
 
     if (!game) {
-        return "Loading";
+        return <Loading/>;
     }
 
     return <div className={styles.view}>

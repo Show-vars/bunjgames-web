@@ -3,6 +3,7 @@ import {useHistory} from "react-router-dom";
 import styles from "./Admin.scss";
 import {Link} from "react-router-dom";
 import {AudioPlayer, ImagePlayer, VideoPlayer} from "../Common.jsx";
+import {Loading} from "../Common.jsx";
 
 const getStatusName = (status) => {
     switch (status) {
@@ -20,6 +21,10 @@ const getStatusName = (status) => {
             return "Discussion";
         case 'answer':
             return "Answer";
+        case 'extra_minute':
+            return "Extra minute";
+        case 'club_help':
+            return "Club help";
         case 'right_answer':
             return "Right answer";
         case 'question_end':
@@ -42,7 +47,8 @@ const Header = ({game}) => {
         <div className={styles.logo}>Admin dashboard</div>
         <div className={styles.token}>{game.token.toUpperCase()}</div>
         <div className={styles.nav}>
-            <div className={css(styles.button, styles.mute)} onClick={onSoundStop}><i className="fas fa-volume-mute"/></div>
+            <div className={css(styles.button, styles.mute)} onClick={onSoundStop}><i className="fas fa-volume-mute"/>
+            </div>
             <Link className={styles.button} to={"/"}>Home</Link>
             <Link className={styles.button} to={"/whirligig/view"}>View</Link>
             <a className={styles.button} onClick={onLogout}>Logout</a>
@@ -190,14 +196,13 @@ const RightPanel = ({game, items}) => (
     </div>
 )
 
-const Content = ({ game}) => {
+const Content = ({game}) => {
     const items = game.items || [];
 
-    return (
-        <div className={styles.content}>
-            <BigItem game={game}/>
-            <RightPanel game={game} items={items}/>
-        </div>)
+    return <div className={styles.content}>
+        <BigItem game={game}/>
+        <RightPanel game={game} items={items}/>
+    </div>
 };
 
 const Footer = ({game}) => {
@@ -210,12 +215,12 @@ const Footer = ({game}) => {
 
     useEffect(() => {
         var timer;
-        if(game.timer_time > 0) {
+        if (game.timer_time > 0) {
             setTime(WHIRLIGIG_API.calcTime());
             timer = setInterval(() => {
                 const time = WHIRLIGIG_API.calcTime();
-                if(game.state === "question_discussion" && time <= 0) {
-                    WHIRLIGIG_API.nextState("question_discussion");
+                if (["question_discussion", "extra_minute", "club_help"].includes(game.state) && time <= 0) {
+                    WHIRLIGIG_API.nextState(game.state);
                 }
                 setTime(time)
             }, 1000);
@@ -225,12 +230,12 @@ const Footer = ({game}) => {
     });
 
     let nextButtonContent;
-    if(game.state === "right_answer") {
+    if (game.state === "right_answer") {
         nextButtonContent = [
             <div className={css(styles.button, styles.next)} onClick={() => onAnswerClick(true)}>Right</div>,
             <div className={css(styles.button, styles.next)} onClick={() => onAnswerClick(false)}>Wrong</div>
         ];
-    } else if(game.state !== "end") {
+    } else if (game.state !== "end") {
         nextButtonContent = <div className={css(styles.button, styles.next)} onClick={onNextClick}>Next</div>
     }
 
@@ -262,11 +267,13 @@ const WhirligigAdmin = () => {
         return () => WHIRLIGIG_API.getGameSubscriber().unsubscribe(id);
     }, [])
 
-    return game ? <div className={styles.admin}>
+    if (!game) return <Loading/>
+
+    return <div className={styles.admin}>
         <Header game={game}/>
         <Content game={game}/>
         <Footer game={game}/>
-    </div> : "Loading"
+    </div>
 }
 
 export default WhirligigAdmin;
