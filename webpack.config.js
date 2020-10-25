@@ -42,7 +42,7 @@ module.exports = {
       chunkFilename: '[id].css',
     }),
   ],
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval-source-map',
   devServer: {
     contentBase: path.join(__dirname, 'public'),
     hot: true,

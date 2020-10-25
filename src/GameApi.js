@@ -28,12 +28,13 @@ export default class GameApi {
                 this.saveToken(token);
             }
             this.socket.onmessage = e => {
-                console.log("[WS] Message", e);
+                const data = JSON.parse(e.data);
+                console.log("[WS] Message", data);
                 if (timeout) {
                     clearTimeout(timeout);
                     resolve();
                 }
-                this.onData(JSON.parse(e.data));
+                this.onData(data);
             }
             this.socket.onclose = e => {
                 console.log("[WS] Close", e);

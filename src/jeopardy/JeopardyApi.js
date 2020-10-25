@@ -31,7 +31,7 @@ export default class JeopardyApi extends GameApi {
                 'Content-Type': 'multipart/form-data'
             }
         }).then(result => {
-            this.saveToken(result.data.token);
+            this.saveToken(result.data.game.token);
             return result.data;
         });
     }
@@ -44,8 +44,8 @@ export default class JeopardyApi extends GameApi {
         this.execute("choose_question", {question_id})
     }
 
-    end_question(player_id, balance_diff) {
-        this.execute("end_question", {player_id, balance_diff})
+    set_answerer_and_bet(player_id, bet) {
+        this.execute("set_answerer_and_bet", {player_id, bet})
     }
 
     skip_question() {
@@ -53,7 +53,15 @@ export default class JeopardyApi extends GameApi {
     }
 
     button_click(player_id) {
-        this.execute("answer_correct", {player_id})
+        this.execute("button_click", {player_id})
+    }
+
+    answer(is_right) {
+        this.execute("answer", {is_right})
+    }
+
+    remove_final_theme(theme_id) {
+        this.execute("remove_final_theme", {theme_id})
     }
 
     final_bet(player_id, bet) {

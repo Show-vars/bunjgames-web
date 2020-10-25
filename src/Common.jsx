@@ -2,7 +2,7 @@ import React from "react";
 import ReactPlayer from "react-player";
 import styles from "./Common.scss";
 
-const getMediaUrl = (game, url) => url.startsWith("/") ? `${BunjGamesConfig.WHIRLIGIG_MEDIA}${game.token}${url}` : url;
+const getMediaUrl = (game, url) => url.startsWith("/") ? `${BunjGamesConfig.WHIRLIGIG_MEDIA}${game.name}/${game.token}${url}` : url;
 
 const ImagePlayer = ({game, url}) => (
     <img src={getMediaUrl(game, url)} alt="Image"/>

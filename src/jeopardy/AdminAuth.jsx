@@ -62,14 +62,17 @@ const AdminAuth = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        console.log("JEOPARDY_API.hasToken()", JEOPARDY_API.hasToken());
         if(JEOPARDY_API.hasToken()) {
             JEOPARDY_API.connect().then(() => {
+                console.log("JEOPARDY_API.connect()", true);
                 if(history.length > 0) {
                     history.goBack();
                 } else {
                     history.push("/jeopardy/admin");
                 }
             }).catch(() => {
+                console.log("JEOPARDY_API.connect()", false);
                 setLoading(false)
             })
         } else {

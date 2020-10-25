@@ -1,32 +1,42 @@
 import React, {useEffect, useState} from "react";
 import styles from "./Themes.scss";
 
-const Theme = ({theme, active=false}) => (
-    <div className={(active) ? css(styles.button, styles.question) : styles.theme}>{theme.name}</div>
+const Theme = ({theme, onSelect, active = false}) => (
+    <div className={css(styles.theme, active && styles.button, styles.question)}
+         onClick={() => !theme.is_removed && onSelect(theme.id)}>
+        <div>{!theme.is_removed && theme.name}</div>
+    </div>
 );
 
-const Question = ({question}) => (
-    <div className={css(styles.button, styles.question)}>{question.value}</div>
+const Question = ({question, onSelect}) => (
+    <div className={css(!question.is_processed && styles.button, styles.question)}
+         onClick={() => !question.is_processed && onSelect(question.id)}>
+        <div>{!question.is_processed && question.value}</div>
+    </div>
 );
 
-const ThemesList = ({game}) => (
+const ThemesList = ({game, onSelect, active = false}) => (
     <div className={styles.themesList}>
-        {game.categories.map((theme, index) => <Theme active={true} key={index} theme={theme}/>)}
+        {game.themes.map((theme, index) => <Theme onSelect={onSelect} active={active} key={index} theme={theme}/>)}
     </div>
 );
 
 const ThemesGrid = ({game}) => (
     <div className={styles.themesGrid}>
-        {game.categories.map((theme, index) => <Theme key={index} theme={theme}/>)}
+        {game.themes.map((theme, index) => <Theme key={index} theme={theme}/>)}
     </div>
 );
 
-const QuestionsGrid = ({game}) => {
+const QuestionsGrid = ({game, selectedId, onSelect}) => {
     let items = [];
-    game.categories.forEach((theme, categoryIndex) => {
-        items.push(<Theme key={categoryIndex} theme={theme}/>);
+    game.themes.forEach((theme, themeIndex) => {
+        items.push(<Theme key={themeIndex} theme={theme}/>);
         theme.questions.forEach((question, questionIndex) =>
-            items.push(<Question key={categoryIndex + "_" + questionIndex} question={question}/>)
+            items.push(<Question
+                onSelect={onSelect}
+                key={themeIndex + "_" + questionIndex}
+                question={question}
+            />)
         );
     });
 
