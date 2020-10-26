@@ -1,12 +1,10 @@
 import React, {useState, useEffect, useRef} from "react";
-import { useHistory } from "react-router-dom";
 import styles from "./Auth.scss";
 import {Loading} from "../Common.jsx";
 
-const GameCreate = ({onInput, onOpen}) => {
+const GameCreate = ({setConnected}) => {
     const [loading, setLoading] = useState(false);
     const inputFile = useRef(null);
-    const history = useHistory();
 
 
     const onCreate = () => {
@@ -14,11 +12,10 @@ const GameCreate = ({onInput, onOpen}) => {
 
         WHIRLIGIG_API.createGame(inputFile.current).then(() => {
             WHIRLIGIG_API.connect().then(() => {
-                history.push("/whirligig/admin");
+                setConnected(true);
             })
         }).catch((e) => {
-            console.log(e);
-            alert("Wonderful but not exactly!");
+            alert("Error");
         });
     };
 
@@ -31,8 +28,7 @@ const GameCreate = ({onInput, onOpen}) => {
     </div>
 }
 
-const GameOpen = () => {
-    const history = useHistory();
+const GameOpen = ({setConnected}) => {
     const [loading, setLoading] = useState(false);
     const [token, setToken] = useState("");
 
@@ -40,11 +36,10 @@ const GameOpen = () => {
         setLoading(true);
 
         WHIRLIGIG_API.connect(token).then(() => {
-            history.push("/whirligig/view");
+            setConnected(true);
         }).catch(() => {
             setLoading(false);
-
-            alert("Not Wonderful!");
+            alert("Error");
         });
     };
 
@@ -57,18 +52,13 @@ const GameOpen = () => {
     </div>
 }
 
-const Auth = () => {
-    const history = useHistory();
+const Auth = ({setConnected}) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
        if(WHIRLIGIG_API.hasToken()) {
            WHIRLIGIG_API.connect().then(() => {
-               if(history.length > 0) {
-                   history.goBack();
-               } else {
-                   history.push("/whirligig/admin");
-               }
+               setConnected(true);
            }).catch(() => {
                setLoading(false)
            })
@@ -80,8 +70,8 @@ const Auth = () => {
     if(loading) return <Loading/>;
 
     return <div className={styles.auth}>
-        <GameCreate/>
-        <GameOpen/>
+        <GameCreate setConnected={setConnected}/>
+        <GameOpen setConnected={setConnected}/>
     </div>
 }
 

@@ -4,6 +4,7 @@ import styles from "./Admin.scss";
 import {Link} from "react-router-dom";
 import {AudioPlayer, ImagePlayer, VideoPlayer} from "../Common.jsx";
 import {Loading} from "../Common.jsx";
+import Auth from "./Auth.jsx";
 
 const getStatusName = (status) => {
     switch (status) {
@@ -41,7 +42,7 @@ const Header = ({game}) => {
 
     const onLogout = () => {
         WHIRLIGIG_API.logout();
-        history.push("/whirligig/auth");
+        history.push("/");
     };
     return <div className={styles.header}>
         <div className={styles.logo}>Admin dashboard</div>
@@ -254,19 +255,17 @@ const Footer = ({game}) => {
 
 
 const WhirligigAdmin = () => {
-    const history = useHistory();
     const [game, setGame] = useState();
+    const [connected, setConnected] = useState();
 
-    if (!WHIRLIGIG_API.isConnected()) {
-        history.push("/whirligig/auth");
-        return "";
-    }
+    useEffect(() => setConnected(WHIRLIGIG_API.isConnected()), [])
 
     useEffect(() => {
         const id = WHIRLIGIG_API.getGameSubscriber().subscribe(setGame);
         return () => WHIRLIGIG_API.getGameSubscriber().unsubscribe(id);
     }, [])
 
+    if (!connected) return <Auth setConnected={setConnected}/>;
     if (!game) return <Loading/>
 
     return <div className={styles.admin}>

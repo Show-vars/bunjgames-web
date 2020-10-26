@@ -1,0 +1,24 @@
+@import "../Common.scss";
+
+.body {
+  height: 100%;
+  background-color: $baseBackground;
+  color: $baseTextColor;
+
+  .header {
+    background-color: $baseBackgroundDark;
+    padding: 16px;
+  }
+
+  a {
+    color: $baseTextColor;
+  }
+
+  .category {
+    padding: 16px;
+  }
+
+  .subtitle {
+    font-size: 32px;
+  }
+}

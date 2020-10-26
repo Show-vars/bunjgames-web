@@ -4,66 +4,25 @@ import {Link, useHistory} from "react-router-dom";
 import styles from "./Admin.scss";
 import {ThemesList, ThemesGrid, QuestionsGrid} from "./Themes.jsx";
 import {AudioPlayer, ImagePlayer, Loading, VideoPlayer} from "../Common.jsx"
-
-
-const getStatusName = (status) => {
-    switch (status) {
-        case 'waiting_for_players':
-            return "Waiting for players";
-        case 'themes_all':
-            return "All themes";
-        case 'round_themes':
-            return "Round themes";
-        case 'questions':
-            return "Questions";
-        case 'question_event':
-            return "Question event";
-        case 'question':
-            return "Question";
-        case 'question_end':
-            return "Question end";
-        case 'final_themes':
-            return "Final themes";
-        case 'final_bets':
-            return "Final bets";
-        case 'final_question':
-            return "Final question";
-        case 'final_question_timer':
-            return "Final answer";
-        case 'final_end':
-            return "Final question end";
-        case 'game_end':
-            return "Game over";
-    }
-}
-
-const getTypeName = (status) => {
-    switch (status) {
-        case 'standard':
-            return "Standard";
-        case 'auction':
-            return "Auction";
-        case 'bagcat':
-            return "Cat in the bag";
-    }
-}
+import {getStatusName, getTypeName} from "./Common.js";
+import {AdminAuth} from "./Auth.jsx";
 
 
 const Header = ({game}) => {
     const history = useHistory();
 
-    // const onSoundStop = () => WHIRLIGIG_API.intercom("sound_stop");
+    const onSoundStop = () => JEOPARDY_API.intercom("sound_stop");
 
     const onLogout = () => {
         JEOPARDY_API.logout();
-        history.push("/jeopardy/admin/auth");
+        history.push("/");
     };
     return <div className={styles.header}>
         <div className={styles.logo}>Admin dashboard</div>
         <div className={styles.token}>{game.token.toUpperCase()}</div>
         <div className={styles.state}>{getStatusName(game.state)}</div>
         <div className={styles.nav}>
-            {/*<div className={css(styles.button, styles.mute)} onClick={onSoundStop}><i className="fas fa-volume-mute"/></div>*/}
+            {<div className={css(styles.button, styles.mute)} onClick={onSoundStop}><i className="fas fa-volume-mute"/></div>}
             <Link className={styles.button} to={"/"}>Home</Link>
             <Link className={styles.button} to={"/jeopardy/view"}>View</Link>
             <a className={styles.button} onClick={onLogout}>Logout</a>
@@ -246,19 +205,17 @@ const Footer = ({game}) => {
 }
 
 const JeopardyAdmin = () => {
-    const history = useHistory();
     const [game, setGame] = useState();
+    const [connected, setConnected] = useState();
 
-    if (!JEOPARDY_API.isConnected()) {
-        history.push("/jeopardy/admin/auth");
-        return "";
-    }
+    useEffect(() => setConnected(JEOPARDY_API.isConnected()), [])
 
     useEffect(() => {
         const id = JEOPARDY_API.getGameSubscriber().subscribe(setGame);
         return () => JEOPARDY_API.getGameSubscriber().unsubscribe(id);
     }, [])
 
+    if (!connected) return <AdminAuth setConnected={setConnected}/>;
     if (!game) return <Loading/>
 
     return <div className={styles.admin}>

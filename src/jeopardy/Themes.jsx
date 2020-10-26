@@ -2,14 +2,14 @@ import React, {useEffect, useState} from "react";
 import styles from "./Themes.scss";
 
 const Theme = ({theme, onSelect, active = false}) => (
-    <div className={css(styles.theme, active && styles.button, styles.question)}
+    <div className={css(active && styles.active, styles.theme)}
          onClick={() => !theme.is_removed && onSelect(theme.id)}>
         <div>{!theme.is_removed && theme.name}</div>
     </div>
 );
 
 const Question = ({question, onSelect}) => (
-    <div className={css(!question.is_processed && styles.button, styles.question)}
+    <div className={css(!question.is_processed && styles.active, styles.question)}
          onClick={() => !question.is_processed && onSelect(question.id)}>
         <div>{!question.is_processed && question.value}</div>
     </div>

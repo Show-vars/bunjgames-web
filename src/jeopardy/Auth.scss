@@ -8,6 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 
   .gameCreate, .gameOpen {
     div {
@@ -16,8 +17,8 @@
     width: 100%;
     max-width: 500px;
     background-color: #31495e;
-    margin: 50px 50px;
-    padding: 40px;
+    margin: 16px;
+    padding: 32px;
 
     display: flex;
     flex-direction: column;
@@ -28,7 +29,6 @@
       font-size: 24px;
 
       margin-bottom: 20px;
-
     }
 
     input {

@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
 import styles from "./View.scss";
-import {useHistory} from "react-router-dom";
 import {AudioPlayer, ImagePlayer, VideoPlayer} from "../Common.jsx";
 import {Howl, Howler} from 'howler';
 import Whirligig from "./Whirligig.jsx";
 import {Loading} from "../Common.jsx";
+import Auth from "./Auth.jsx";
 
 const isQuestionAvailable = (game) => {
     const {cur_question} = game;
@@ -63,9 +63,9 @@ const QuestionMessage = ({game, text, image, audio, video}) => {
     return <div className={styles.message}>
         {text && <div><p>{text}</p></div>}
         {image && <div><ImagePlayer autoPlay game={game} url={image}/></div>}
-        {game.state === "question_start" && audio &&
+        {["question_start", "answer"].includes(game.state) && audio &&
         <div><AudioPlayer controls autoPlay={true} game={game} url={audio}/></div>}
-        {game.state === "question_start" && video &&
+        {["question_start", "answer"].includes(game.state) && video &&
         <div><VideoPlayer controls autoPlay={true} game={game} url={video}/></div>}
     </div>
 }
@@ -104,13 +104,10 @@ const Content = ({game}) => {
 }
 
 const WhirligigView = () => {
-    const history = useHistory();
     const [game, setGame] = useState();
+    const [connected, setConnected] = useState();
 
-    if (!WHIRLIGIG_API.isConnected()) {
-        history.push("/whirligig/auth");
-        return "";
-    }
+    useEffect(() => setConnected(WHIRLIGIG_API.isConnected()), [])
 
     const triggerTimerSound = (time) => {
         if (!game.cur_item) return;
@@ -196,6 +193,10 @@ const WhirligigView = () => {
             resetSounds();
         }
     }, []);
+
+    if (!connected) {
+        return <Auth setConnected={setConnected}/>;
+    }
 
     if (!game) {
         return <Loading/>;

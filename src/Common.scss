@@ -1,18 +1,22 @@
 @import './Shake.scss';
 
+$baseBackgroundButton: #535456;
 $baseBackgroundDark: #333435;
 $baseBackground: #31495e;
-$baseTextColor: #c4c4c4;
+$baseBackgroundSelect: #DBD011;
+$baseTextColor: #E5E5ED;
+$baseTextColorSelect: #000000;
+$valueTextColor: #DCCA77;
 
 .button {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #535456;
+  background-color: $baseBackgroundButton;
   font-style: normal;
   text-decoration: none;
-  color: white;
+  color: $baseTextColor;
   padding: 14px 20px;
 
   user-select: none;
@@ -30,7 +34,8 @@ $baseTextColor: #c4c4c4;
   }
 
   &.selected {
-    border: 4px solid #b68f42;
+    background-color: $baseBackgroundSelect;
+    color: $baseTextColorSelect;
   }
 }
 
