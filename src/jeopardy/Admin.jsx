@@ -68,7 +68,18 @@ const Question = ({question}) => {
     </div>
 }
 
-const Item = ({game}) => {
+const FinalBets = ({players}) => {
+    const onClick = (playerId) => {
+        JEOPARDY_API.intercom("do_bet:" + playerId)
+    }
+
+    return <div className={css(styles.padding, styles.players)}>
+        {players.map((player, index) =>
+            <Player key={index} balance={player.final_bet} name={player.name} onClick={() => onClick(player.id)}/>
+        )}
+    </div>
+}
+const StateContent = ({game}) => {
     const onSelectQuestion = (questionId) => {
         JEOPARDY_API.chooseQuestion(questionId);
     };
@@ -87,10 +98,12 @@ const Item = ({game}) => {
         content = <QuestionsGrid onSelect={onSelectQuestion} game={game}/>
     } else if (game.state === "question_event") {
         content = <QuestionEvent question={game.question}/>
-    } else if (game.state === "question") {
+    } else if (["question", "answer", "final_question", "final_answer"].includes(game.state)) {
         content = <Question question={game.question}/>
+    } else if (game.state === "final_bets") {
+        content = <FinalBets players={game.players}/>
     }
-    return <div className={styles.item}>
+    return <div className={styles.stateContent}>
         {content}
     </div>
 };
@@ -134,15 +147,15 @@ const RightPanel = ({game}) => (
 
 const Content = ({game}) => {
     return <div className={styles.content}>
-        <Item game={game}/>
+        <StateContent game={game}/>
         <RightPanel game={game}/>
     </div>
 }
 
-const Player = ({player, onClick, selected}) => {
+const Player = ({balance, name, onClick, selected}) => {
     return <div className={css(styles.button, selected && styles.selected, styles.player)} onClick={onClick}>
-        <div>{player.balance}</div>
-        <div>{player.name}</div>
+        <div>{balance}</div>
+        <div>{name}</div>
     </div>
 }
 
@@ -173,7 +186,7 @@ const Footer = ({game}) => {
         if(answerer && bet > 0) {
             nextButtonContent.push(<div className={styles.button} onClick={onAnswererClick}>Next</div>);
         }
-    } else if (["question"].includes(game.state)) {
+    } else if (["answer"].includes(game.state)) {
         nextButtonContent.push(<div className={styles.button} onClick={onSkipClick}>Skip</div>);
 
         if(game.answerer) {
@@ -194,8 +207,9 @@ const Footer = ({game}) => {
     return <div className={styles.footer}>
         <div className={styles.players}>
             {game.players.map((player, index) =>
-                <Player key={index} player={player} onClick={() => onPlayerSelect(player.id)} selected={player.id === answerer}/>
-                )}
+                <Player key={index} balance={player.balance} name={player.name}
+                        onClick={() => onPlayerSelect(player.id)} selected={player.id === answerer}/>
+            )}
         </div>
         {betContent}
         <div className={styles.buttons}>

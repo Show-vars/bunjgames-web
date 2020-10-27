@@ -47,7 +47,7 @@ const Content = ({game}) => {
         content = <QuestionsGrid game={game}/>
     } else if (game.state === "question_event") {
         content = <Text text={getTypeName(game.question.type)}/>
-    } else if (game.state === "question") {
+    } else if (["question", "answer", "final_question", "final_answer"].includes(game.state)) {
         const {text, image, audio, video} = question;
         content = <QuestionMessage
             game={game} text={text} image={image} audio={audio} video={video}
@@ -99,7 +99,7 @@ const JeopardyView = () => {
                     Music.bagcat.play();
                 }
             } break;
-            case "final_question_timer": Music.minute.play(); break;
+            case "final_answer": Music.minute.play(); break;
         }
     };
 

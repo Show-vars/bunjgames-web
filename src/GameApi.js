@@ -96,6 +96,8 @@ export default class GameApi {
     execute(method, params = {}) {
         if (!this.isConnected()) return;
 
+        console.log("Execute", method, params);
+
         this.socket.send(JSON.stringify({
             method: method,
             params: params
@@ -104,6 +106,8 @@ export default class GameApi {
 
     intercom(message) {
         if (!this.isConnected()) return;
+
+        console.log("Intercom", message);
 
         this.socket.send(JSON.stringify({
             method: "intercom",

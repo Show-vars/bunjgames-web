@@ -1,3 +1,4 @@
+
 const getStatusName = (status) => {
     switch (status) {
         case 'waiting_for_players':
@@ -12,6 +13,8 @@ const getStatusName = (status) => {
             return "Question event";
         case 'question':
             return "Question";
+        case 'answer':
+            return "Answer";
         case 'question_end':
             return "Question end";
         case 'final_themes':
@@ -20,7 +23,7 @@ const getStatusName = (status) => {
             return "Final bets";
         case 'final_question':
             return "Final question";
-        case 'final_question_timer':
+        case 'final_answer':
             return "Final answer";
         case 'final_end':
             return "Final question end";

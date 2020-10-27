@@ -1,10 +1,13 @@
 import GameApi from "../GameApi.js";
 
 const JEOPARDY_TOKEN = "JEOPARDY_TOKEN";
+const JEOPARDY_PLAYER_ID = "JEOPARDY_PLAYER_ID";
 
 export default class JeopardyApi extends GameApi {
     constructor(apiEndpoint, wsEndpoint) {
         super(apiEndpoint, wsEndpoint, JEOPARDY_TOKEN);
+        this.playerId = null;
+        this.loadPlayerId();
     }
 
     createGame(inputFile) {
@@ -32,8 +35,23 @@ export default class JeopardyApi extends GameApi {
             }
         }).then(result => {
             this.saveToken(result.data.game.token);
+            this.savePlayerId(result.data.player_id);
             return result.data;
         });
+    }
+
+    loadPlayerId() {
+        try {
+            this.playerId = JSON.parse(localStorage.getItem(JEOPARDY_PLAYER_ID));
+        } catch (e) {
+            this.playerId = null;
+        }
+        return this.playerId;
+    }
+
+    savePlayerId(playerId) {
+        this.playerId = playerId;
+        localStorage.setItem(JEOPARDY_PLAYER_ID, JSON.stringify(this.playerId));
     }
 
     nextState(from_state=null) {
@@ -52,8 +70,10 @@ export default class JeopardyApi extends GameApi {
         this.execute("skip_question", {})
     }
 
-    button_click(player_id) {
-        this.execute("button_click", {player_id})
+    button_click() {
+        if(this.playerId) {
+            this.execute("button_click", {player_id: this.playerId})
+        }
     }
 
     answer(is_right) {
@@ -64,12 +84,12 @@ export default class JeopardyApi extends GameApi {
         this.execute("remove_final_theme", {theme_id})
     }
 
-    final_bet(player_id, bet) {
-        this.execute("final_bet", {player_id, bet})
+    final_bet(bet) {
+        this.execute("final_bet", {player_id: this.playerId, bet})
     }
 
-    final_answer(player_id, answer) {
-        this.execute("final_answer", {player_id, answer})
+    final_answer(answer) {
+        this.execute("final_answer", {player_id: this.playerId, answer})
     }
 
     set_balance(balance_list) {
@@ -80,4 +100,7 @@ export default class JeopardyApi extends GameApi {
         this.execute("set_round", {round})
     }
 
+    hasPlayerId() {
+        return Boolean(this.playerId);
+    }
 }

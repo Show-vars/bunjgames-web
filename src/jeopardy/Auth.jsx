@@ -107,7 +107,7 @@ const PlayerAuth = ({setConnected}) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if(JEOPARDY_API.hasToken()) {
+        if(JEOPARDY_API.hasToken() && JEOPARDY_API.hasPlayerId()) {
             JEOPARDY_API.connect().then(() => {
                 setConnected(true);
             }).catch(() => {
