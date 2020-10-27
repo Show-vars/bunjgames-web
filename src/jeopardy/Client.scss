@@ -93,14 +93,11 @@
 
       @media (orientation: landscape) {
         max-width: 25vw;
-      }
-
-      @media (orientation: portrait) {
-        min-width: 12vw;
+        min-width: 15vw;
       }
 
       flex-grow: 1;
-      padding: 3px;
+      padding: 3px 5px;
 
       background-color: $baseBackgroundDark;
 

@@ -3,7 +3,7 @@ import {Link, useHistory} from "react-router-dom";
 
 import styles from "./Admin.scss";
 import {ThemesList, ThemesGrid, QuestionsGrid} from "./Themes.jsx";
-import {AudioPlayer, ImagePlayer, Loading, VideoPlayer} from "../Common.jsx"
+import {AudioPlayer, ImagePlayer, Loading, VideoPlayer, Toast} from "../Common.jsx"
 import {getStatusName, getTypeName} from "./Common.js";
 import {AdminAuth} from "./Auth.jsx";
 
@@ -79,6 +79,20 @@ const FinalBets = ({players}) => {
         )}
     </div>
 }
+
+const FinalAnswers = ({players}) => {
+    const onClick = (playerId) => {
+        JEOPARDY_API.intercom("do_answer:" + playerId)
+    }
+
+    return <div className={css(styles.padding, styles.players)}>
+        {players.map((player, index) =>
+            <Player key={index} balance={player.final_answer ? player.final_answer : "-"}
+                    name={player.name} onClick={() => onClick(player.id)}/>
+        )}
+    </div>
+}
+
 const StateContent = ({game}) => {
     const onSelectQuestion = (questionId) => {
         JEOPARDY_API.chooseQuestion(questionId);
@@ -98,10 +112,19 @@ const StateContent = ({game}) => {
         content = <QuestionsGrid onSelect={onSelectQuestion} game={game}/>
     } else if (game.state === "question_event") {
         content = <QuestionEvent question={game.question}/>
-    } else if (["question", "answer", "final_question", "final_answer"].includes(game.state)) {
+    } else if (["question", "answer", "final_question"].includes(game.state)) {
         content = <Question question={game.question}/>
     } else if (game.state === "final_bets") {
         content = <FinalBets players={game.players}/>
+    } else if (game.state === "final_answer") {
+        content = <div>
+            <Question question={game.question}/>
+            <FinalAnswers players={game.players}/>
+        </div>
+    } else if (game.state === "final_end") {
+        content = ""
+    } else if (game.state === "game_end") {
+        content = <div className={styles.padding}>Game over</div>
     }
     return <div className={styles.stateContent}>
         {content}
@@ -236,6 +259,7 @@ const JeopardyAdmin = () => {
         <Header game={game}/>
         <Content game={game}/>
         <Footer game={game}/>
+        <Toast/>
     </div>
 }
 

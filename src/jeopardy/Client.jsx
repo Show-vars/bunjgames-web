@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {Link, useHistory} from "react-router-dom";
-import {Loading} from "../Common.jsx";
+import {useHistory} from "react-router-dom";
+import {Loading, Toast} from "../Common.jsx";
 import styles from "./Client.scss";
 import {PlayerAuth} from "./Auth.jsx";
 import {Howl} from "howler";
 
 const Sounds = {
-    do_bet: new Howl({src: ['/sounds/jeopardy/do_bet.mp3']})
+    do_bet: new Howl({src: ['/sounds/jeopardy/do_bet.mp3']}),
+    schnelle: new Howl({src: ['/sounds/jeopardy/schnelle.wav']})
 }
 
 const Header = () => {
@@ -22,7 +23,7 @@ const Header = () => {
     </div>
 }
 
-const FinalBet = ({game}) => {
+const FinalBet = () => {
     const [bet, setBet] = useState();
 
     const onSubmit = () => {
@@ -33,6 +34,21 @@ const FinalBet = ({game}) => {
         <input type="number" className={styles.input}
                onChange={(e) => setBet(e.target.value)}
                value={bet}/>
+        <div className={styles.button} onClick={onSubmit}>Submit</div>
+    </div>
+}
+
+const FinalAnswer = () => {
+    const [answer, setAnswer] = useState();
+
+    const onSubmit = () => {
+        JEOPARDY_API.final_answer(answer);
+    }
+
+    return <div className={styles.form}>
+        <input type="text" className={styles.input}
+               onChange={(e) => setAnswer(e.target.value)}
+               value={answer}/>
         <div className={styles.button} onClick={onSubmit}>Submit</div>
     </div>
 }
@@ -50,6 +66,8 @@ const Content = ({game}) => {
         content = <div className={css(styles.playerButton,  buttonActive && styles.active)} onClick={onButton}/>
     } else if(["final_bets"].includes(game.state) && player.final_bet === 0) {
         content = <FinalBet />
+    } else if (["final_answer"].includes(game.state) && !player.final_answer) {
+        content = <FinalAnswer />
     } else {
         content = <div className={styles.text}>Jeopardy</div>
     }
@@ -80,6 +98,8 @@ const JeopardyClient = () => {
     const triggerIntercom = (message) => {
         if(message === "do_bet:" + JEOPARDY_API.playerId) {
             Sounds.do_bet.play();
+        } else if(message === "do_answer:" + JEOPARDY_API.playerId) {
+            Sounds.schnelle.play();
         }
     };
 
@@ -102,6 +122,7 @@ const JeopardyClient = () => {
         <Header />
         <Content game={game}/>
         <Players game={game}/>
+        <Toast/>
     </div>;
 }
 

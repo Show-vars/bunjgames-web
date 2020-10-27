@@ -102,6 +102,13 @@
           font-size: 40px;
         }
       }
+
+      .players {
+        flex-direction: column;
+        .player {
+          margin: 5px 0;
+        }
+      }
     }
 
 

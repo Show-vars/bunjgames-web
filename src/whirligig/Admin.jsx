@@ -2,8 +2,7 @@ import React, {useState, useEffect} from "react";
 import {useHistory} from "react-router-dom";
 import styles from "./Admin.scss";
 import {Link} from "react-router-dom";
-import {AudioPlayer, ImagePlayer, VideoPlayer} from "../Common.jsx";
-import {Loading} from "../Common.jsx";
+import {Loading, AudioPlayer, ImagePlayer, VideoPlayer, Toast} from "../Common.jsx";
 import Auth from "./Auth.jsx";
 
 const getStatusName = (status) => {
@@ -272,6 +271,7 @@ const WhirligigAdmin = () => {
         <Header game={game}/>
         <Content game={game}/>
         <Footer game={game}/>
+        <Toast/>
     </div>
 }
 

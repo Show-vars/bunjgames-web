@@ -1,5 +1,7 @@
 import axios from 'axios';
 import Subscriber from "./Subscriber";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default class GameApi {
     constructor(apiEndpoint, wsEndpoint, tokenName) {
@@ -63,6 +65,8 @@ export default class GameApi {
             this.gameSubscriber.fire(this.game);
         } else if (data.type === "intercom") {
             this.intercomSubscriber.fire(data.message);
+        } else if (data.type === "error") {
+            toast.dark(data.message);
         }
     }
 

@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import styles from "./Auth.scss";
-import {Loading} from "../Common.jsx";
+import {Loading, Toast} from "../Common.jsx";
+import {toast} from "react-toastify";
 
 const GameCreate = ({setConnected}) => {
     const [loading, setLoading] = useState(false);
@@ -14,8 +15,8 @@ const GameCreate = ({setConnected}) => {
                 setConnected(true);
             })
         }).catch((e) => {
-            console.log(e);
-            alert("Error");
+            setLoading(false);
+            toast.dark("Error while creation game");
         });
     };
 
@@ -39,7 +40,7 @@ const GameOpen = ({setConnected}) => {
             setConnected(true);
         }).catch(() => {
             setLoading(false);
-            alert("Error");
+            toast.dark("Game not found");
         });
     };
 
@@ -66,7 +67,7 @@ const RegisterPlayer = ({setConnected}) => {
             })
         }).catch(() => {
             setLoading(false);
-            alert("Error");
+            toast.dark("Game not found");
         });
     };
 
@@ -100,6 +101,7 @@ const AdminAuth = ({setConnected}) => {
     return <div className={styles.auth}>
         <GameCreate setConnected={setConnected}/>
         <GameOpen setConnected={setConnected}/>
+        <Toast/>
     </div>
 }
 
@@ -122,6 +124,7 @@ const PlayerAuth = ({setConnected}) => {
 
     return <div className={styles.auth}>
         <RegisterPlayer setConnected={setConnected}/>
+        <Toast/>
     </div>
 }
 
