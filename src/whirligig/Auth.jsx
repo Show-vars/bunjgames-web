@@ -17,7 +17,11 @@ const GameCreate = ({setConnected}) => {
             })
         }).catch((e) => {
             setLoading(false);
-            toast.dark("Error while creating the game");
+            if (e.response.status === 400 && e.response.data) {
+                toast.dark(e.response.data.detail);
+            } else {
+                toast.dark("Error while creation game");
+            }
         });
     };
 

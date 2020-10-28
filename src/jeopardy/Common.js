@@ -25,8 +25,10 @@ const getStatusName = (status) => {
             return "Final question";
         case 'final_answer':
             return "Final answer";
-        case 'final_end':
-            return "Final question end";
+        case 'final_player_answer':
+            return "Final player answer";
+        case 'final_player_bet':
+            return "Final player bet";
         case 'game_end':
             return "Game over";
     }

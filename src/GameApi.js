@@ -23,29 +23,48 @@ export default class GameApi {
     connect(token = this.token) {
         return new Promise((resolve, reject) => {
             let timeout = setTimeout(() => reject(), 5000);
-            this.socket = new WebSocket(this.wsEndpoint + token);
-            console.log("[WS] Connecting as", token);
-            this.socket.onopen = e => {
-                console.log("[WS] Connected", e);
-                this.saveToken(token);
-            }
-            this.socket.onmessage = e => {
-                const data = JSON.parse(e.data);
-                console.log("[WS] Message", data);
-                if (timeout) {
-                    clearTimeout(timeout);
-                    resolve();
+            let reconnectCount = 5;
+            let connected = false;
+
+            const doConnect = () => {
+                this.socket = new WebSocket(this.wsEndpoint + token);
+                console.log("[WS] Connecting as", token);
+                this.socket.onopen = e => {
+                    console.log("[WS] Connected", e);
+                    this.saveToken(token);
                 }
-                this.onData(data);
+                this.socket.onmessage = e => {
+                    const data = JSON.parse(e.data);
+                    console.log("[WS] Message", data);
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        connected = true;
+                        reconnectCount = 5;
+                        resolve();
+                    }
+                    this.onData(data);
+                }
+                this.socket.onclose = e => {
+                    console.log("[WS] Close", e);
+
+                    if(!connected) {
+                        reject();
+                    } else {
+                        console.log("[WS] Reconnecting", e);
+
+                        if(reconnectCount > 0) {
+                            reconnectCount -= 1;
+                            setTimeout(() => doConnect(), 1000);
+                        }
+                    }
+                }
+                this.socket.onerror = e => {
+                    console.log("[WS] Error", e);
+                    reject();
+                }
             }
-            this.socket.onclose = e => {
-                console.log("[WS] Close", e);
-                reject();
-            }
-            this.socket.onerror = e => {
-                console.log("[WS] Error", e);
-                reject();
-            }
+
+            doConnect();
         });
     }
 

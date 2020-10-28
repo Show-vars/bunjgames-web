@@ -92,6 +92,10 @@ export default class JeopardyApi extends GameApi {
         this.execute("final_answer", {player_id: this.playerId, answer})
     }
 
+    final_player_answer(is_right) {
+        this.execute("final_player_answer", {is_right})
+    }
+
     set_balance(balance_list) {
         this.execute("set_balance", {balance_list})
     }

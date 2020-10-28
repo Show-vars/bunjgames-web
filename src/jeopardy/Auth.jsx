@@ -16,7 +16,11 @@ const GameCreate = ({setConnected}) => {
             })
         }).catch((e) => {
             setLoading(false);
-            toast.dark("Error while creation game");
+            if (e.response.status === 400 && e.response.data) {
+                toast.dark(e.response.data.detail);
+            } else {
+                toast.dark("Error while creation game");
+            }
         });
     };
 
@@ -65,9 +69,13 @@ const RegisterPlayer = ({setConnected}) => {
             JEOPARDY_API.connect().then(() => {
                 setConnected(true);
             })
-        }).catch(() => {
+        }).catch((e) => {
             setLoading(false);
-            toast.dark("Game not found");
+            if (e.response.status === 400 && e.response.data) {
+                toast.dark(e.response.data.detail);
+            } else {
+                toast.dark("Error while registering player");
+            }
         });
     };
 

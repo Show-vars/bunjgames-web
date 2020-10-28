@@ -33,6 +33,7 @@ const Text = ({text}) => <div className={css(styles.message, styles.text)}><p>{t
 
 const Content = ({game}) => {
     const {question} = game;
+    const answerer = game.answerer && game.players.find(p => p.id === game.answerer);
 
     let content;
     if (game.state === "waiting_for_players") {
@@ -57,6 +58,10 @@ const Content = ({game}) => {
         content = <QuestionMessage
             game={game} text={answer_text} image={answer_image} audio={answer_audio} video={answer_video}
         />
+    } else if (game.state === "final_player_answer") {
+        content = <Text text={answerer.final_answer || "⸻"}/>
+    } else if (game.state === "final_player_bet") {
+        content = <Text text={answerer.final_bet}/>
     } else {
         content = <Text text={"Jeopardy"}/>
     }

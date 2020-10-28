@@ -22,7 +22,8 @@ const Header = ({game}) => {
         <div className={styles.token}>{game.token.toUpperCase()}</div>
         <div className={styles.state}>{getStatusName(game.state)}</div>
         <div className={styles.nav}>
-            {<div className={css(styles.button, styles.mute)} onClick={onSoundStop}><i className="fas fa-volume-mute"/></div>}
+            {<div className={css(styles.button, styles.mute)} onClick={onSoundStop}><i className="fas fa-volume-mute"/>
+            </div>}
             <Link className={styles.button} to={"/"}>Home</Link>
             <Link className={styles.button} to={"/jeopardy/view"}>View</Link>
             <a className={styles.button} onClick={onLogout}>Logout</a>
@@ -68,26 +69,27 @@ const Question = ({question}) => {
     </div>
 }
 
-const FinalBets = ({players}) => {
+const FinalBets = ({players, answerer}) => {
     const onClick = (playerId) => {
         JEOPARDY_API.intercom("do_bet:" + playerId)
     }
 
     return <div className={css(styles.padding, styles.players)}>
         {players.map((player, index) =>
-            <Player key={index} balance={player.final_bet} name={player.name} onClick={() => onClick(player.id)}/>
+            <Player key={index} balance={player.final_bet} selected={answerer && player.id === answerer}
+                    name={player.name} onClick={() => onClick(player.id)}/>
         )}
     </div>
 }
 
-const FinalAnswers = ({players}) => {
+const FinalAnswers = ({players, answerer}) => {
     const onClick = (playerId) => {
         JEOPARDY_API.intercom("do_answer:" + playerId)
     }
 
     return <div className={css(styles.padding, styles.players)}>
         {players.map((player, index) =>
-            <Player key={index} balance={player.final_answer ? player.final_answer : "-"}
+            <Player key={index} balance={player.final_answer || "⸻"} selected={answerer && player.id === answerer}
                     name={player.name} onClick={() => onClick(player.id)}/>
         )}
     </div>
@@ -121,8 +123,10 @@ const StateContent = ({game}) => {
             <Question question={game.question}/>
             <FinalAnswers players={game.players}/>
         </div>
-    } else if (game.state === "final_end") {
-        content = ""
+    } else if (game.state === "final_player_answer") {
+        content = <FinalAnswers players={game.players} answerer={game.answerer}/>
+    } else if (game.state === "final_player_bet") {
+        content = <FinalBets players={game.players} answerer={game.answerer}/>
     } else if (game.state === "game_end") {
         content = <div className={styles.padding}>Game over</div>
     }
@@ -195,27 +199,31 @@ const Footer = ({game}) => {
     const onSkipClick = () => JEOPARDY_API.skip_question();
     const onAnswererClick = () => JEOPARDY_API.set_answerer_and_bet(answerer, bet);
     const onAnswerClick = (is_right) => JEOPARDY_API.answer(is_right);
+    const onFinalAnswerClick = (is_right) => JEOPARDY_API.final_player_answer(is_right);
     const onPlayerSelect = (id) => {
-        if(["question_event"].includes(game.state)) setAnswerer(id);
+        if (["question_event"].includes(game.state)) setAnswerer(id);
     };
 
     let nextButtonContent = [];
     let betContent = "";
 
-    if (["questions", "final_themes", "final_end"].includes(game.state)) {
+    if (["questions", "final_themes", "game_end"].includes(game.state)) {
 
     } else if (["question_event"].includes(game.state)) {
         nextButtonContent.push(<div className={styles.button} onClick={onSkipClick}>Skip</div>);
-        if(answerer && bet > 0) {
+        if (answerer && bet > 0) {
             nextButtonContent.push(<div className={styles.button} onClick={onAnswererClick}>Next</div>);
         }
     } else if (["answer"].includes(game.state)) {
         nextButtonContent.push(<div className={styles.button} onClick={onSkipClick}>Skip</div>);
 
-        if(game.answerer) {
+        if (game.answerer) {
             nextButtonContent.push(<div className={styles.button} onClick={() => onAnswerClick(false)}>Wrong</div>);
             nextButtonContent.push(<div className={styles.button} onClick={() => onAnswerClick(true)}>Right</div>);
         }
+    } else if (["final_player_answer"].includes(game.state)) {
+        nextButtonContent.push(<div className={styles.button} onClick={() => onFinalAnswerClick(false)}>Wrong</div>);
+        nextButtonContent.push(<div className={styles.button} onClick={() => onFinalAnswerClick(true)}>Right</div>);
     } else {
         nextButtonContent.push(<div className={styles.button} onClick={onNextClick}>Next</div>);
     }
@@ -236,7 +244,7 @@ const Footer = ({game}) => {
         </div>
         {betContent}
         <div className={styles.buttons}>
-        {nextButtonContent.map((c, i) => React.cloneElement(c, {key: i}))}
+            {nextButtonContent.map((c, i) => React.cloneElement(c, {key: i}))}
         </div>
     </div>
 }
