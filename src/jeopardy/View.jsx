@@ -4,16 +4,21 @@ import {AudioPlayer, ImagePlayer, VideoPlayer} from "../Common.jsx";
 import {ThemesList, ThemesGrid, QuestionsGrid} from "./Themes.jsx";
 import {Howl} from 'howler';
 import {Loading} from "../Common.jsx";
-import {getTypeName} from "./Common.js";
+import {getRoundName, getTypeName} from "./Common.js";
 import {AdminAuth} from "./Auth.jsx";
 
 const Music = {
+    intro: new Howl({src: ['/sounds/jeopardy/intro.wav']}),
+    themes: new Howl({src: ['/sounds/jeopardy/themes.wav']}),
+    round: new Howl({src: ['/sounds/jeopardy/round.mp3']}),
     minute: new Howl({src: ['/sounds/jeopardy/minute.mp3']}),
     auction: new Howl({src: ['/sounds/jeopardy/auction.mp3']}),
     bagcat: new Howl({src: ['/sounds/jeopardy/bagcat.mp3']}),
+    game_end: new Howl({src: ['/sounds/jeopardy/game_end.mp3']}),
 }
 
 const Sounds = {
+    skip: new Howl({src: ['/sounds/jeopardy/skip.wav']}),
 }
 
 const resetSounds = () => {
@@ -40,6 +45,8 @@ const Content = ({game}) => {
         content = <Text text={game.token}/>
     } else if (game.state === "themes_all") {
         content = <ThemesGrid game={game}/>
+    } else if (game.state === "round") {
+        content = <Text text={getRoundName(game)}/>
     } else if (game.state === "round_themes") {
         content = <ThemesList game={game}/>
     } else if (game.state === "final_themes") {
@@ -71,13 +78,6 @@ const Content = ({game}) => {
     </div>
 }
 
-const Player = ({player, selected}) => {
-    return <div className={css(styles.button, selected && styles.selected, styles.player)}>
-        <div>{player.balance}</div>
-        <div>{player.name}</div>
-    </div>
-}
-
 const JeopardyView = () => {
     const [game, setGame] = useState();
     const [connected, setConnected] = useState();
@@ -87,6 +87,8 @@ const JeopardyView = () => {
     const triggerIntercom = (message) => {
         if(message === "sound_stop") {
             resetSounds();
+        } else if (message === "skip") {
+            Sounds.skip.play();
         }
     };
 
@@ -96,7 +98,9 @@ const JeopardyView = () => {
         resetSounds();
 
         switch (state) {
-            case "themes_all": Music.minute.play(); break;
+            case "intro": Music.intro.play(); break;
+            case "round": Music.round.play(); break;
+            case "round_themes": Music.themes.play(); break;
             case "question_event": {
                 if (game.question.type === "auction") {
                     Music.auction.play();
@@ -105,6 +109,7 @@ const JeopardyView = () => {
                 }
             } break;
             case "final_answer": Music.minute.play(); break;
+            case "game_end": Music.game_end.play(); break;
         }
     };
 

@@ -85,6 +85,11 @@
         padding: 10px;
       }
 
+      .text {
+        font-size: 40px;
+        padding: 10px;
+      }
+
       .bigquestion {
         .question {
           padding: 10px;
@@ -93,6 +98,28 @@
 
         .answer {
           padding: 10px;
+        }
+
+        img {
+          display: block;
+          height: 100%;
+          width: 100%;
+          max-height: 300px;
+          object-fit: contain;
+        }
+
+        audio {
+          padding: 10px;
+          height: 100%;
+          min-height: 50px;
+          display: block;
+        }
+
+        video {
+          display: block;
+          height: 100%;
+          width: 100%;
+          max-height: 300px;
         }
       }
 

@@ -4,7 +4,7 @@ import {Link, useHistory} from "react-router-dom";
 import styles from "./Admin.scss";
 import {ThemesList, ThemesGrid, QuestionsGrid} from "./Themes.jsx";
 import {AudioPlayer, ImagePlayer, Loading, VideoPlayer, Toast} from "../Common.jsx"
-import {getStatusName, getTypeName} from "./Common.js";
+import {getStatusName, getTypeName, getRoundName} from "./Common.js";
 import {AdminAuth} from "./Auth.jsx";
 
 
@@ -42,11 +42,13 @@ const QuestionEvent = ({question}) => {
     </div>
 }
 
-const Question = ({question}) => {
+const Question = ({game}) => {
     const {
         value, custom_theme, text, image, audio, video,
         answer, comment, answer_text, answer_image, answer_audio, answer_video
-    } = question;
+    } = game.question;
+
+    console.log(audio)
 
     return <div className={styles.bigquestion}>
         <div className={styles.question}>
@@ -59,7 +61,7 @@ const Question = ({question}) => {
         </div>
 
         <div className={styles.answer}>
-            <div>Answer: {answer}</div>
+            <div>{answer}</div>
             {comment && <div>Comment: {comment}</div>}
             <div>{answer_text && <p>{answer_text}</p>}</div>
             <div>{answer_image && <ImagePlayer controls={true} game={game} url={answer_image}/>}</div>
@@ -104,8 +106,12 @@ const StateContent = ({game}) => {
     };
 
     let content = null;
-    if (game.state === "themes_all") {
+    if (game.state === "intro") {
+        content = <div className={styles.text}>Intro</div>
+    } else if (game.state === "themes_all") {
         content = <ThemesGrid game={game}/>
+    } else if (game.state === "round") {
+        content = <div className={styles.text}>{getRoundName(game)}</div>
     } else if (game.state === "round_themes") {
         content = <ThemesList game={game}/>
     } else if (game.state === "final_themes") {
@@ -114,13 +120,13 @@ const StateContent = ({game}) => {
         content = <QuestionsGrid onSelect={onSelectQuestion} game={game}/>
     } else if (game.state === "question_event") {
         content = <QuestionEvent question={game.question}/>
-    } else if (["question", "answer", "final_question"].includes(game.state)) {
-        content = <Question question={game.question}/>
+    } else if (["question", "answer", "question_end", "final_question"].includes(game.state)) {
+        content = <Question game={game}/>
     } else if (game.state === "final_bets") {
         content = <FinalBets players={game.players}/>
     } else if (game.state === "final_answer") {
         content = <div>
-            <Question question={game.question}/>
+            <Question game={game}/>
             <FinalAnswers players={game.players}/>
         </div>
     } else if (game.state === "final_player_answer") {
@@ -128,7 +134,7 @@ const StateContent = ({game}) => {
     } else if (game.state === "final_player_bet") {
         content = <FinalBets players={game.players} answerer={game.answerer}/>
     } else if (game.state === "game_end") {
-        content = <div className={styles.padding}>Game over</div>
+        content = <div className={styles.text}>Game over</div>
     }
     return <div className={styles.stateContent}>
         {content}

@@ -47,7 +47,7 @@ export default class GameApi {
                 this.socket.onclose = e => {
                     console.log("[WS] Close", e);
 
-                    if(!connected) {
+                    if(!connected || !this.hasToken()) {
                         reject();
                     } else {
                         console.log("[WS] Reconnecting", e);

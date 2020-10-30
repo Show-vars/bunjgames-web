@@ -3,8 +3,12 @@ const getStatusName = (status) => {
     switch (status) {
         case 'waiting_for_players':
             return "Waiting for players";
+        case 'intro':
+            return "Intro";
         case 'themes_all':
             return "All themes";
+        case 'round':
+            return "Round number";
         case 'round_themes':
             return "Round themes";
         case 'questions':
@@ -45,4 +49,11 @@ const getTypeName = (status) => {
     }
 }
 
-export {getStatusName, getTypeName}
+const getRoundName = (game) => {
+    if (game.is_final_round) {
+        return "FINAL";
+    }
+    return "ROUND " + String(game.round)
+}
+
+export {getStatusName, getTypeName, getRoundName}
