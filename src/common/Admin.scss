@@ -1,0 +1,109 @@
+@import "src/common/Essentials";
+
+.admin {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: $baseBackground;
+}
+
+.header {
+  height: 80px;
+  background-color: $baseBackgroundDark;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 40px;
+
+  .logo {
+    color: white;
+  }
+
+  .token {
+    font-size: 30px;
+    color: white;
+  }
+
+  .state {
+    font-size: 30px;
+    color: white;
+    text-align: center;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+
+    >:not(:last-child) {
+      margin-right: 10px;
+    }
+  }
+}
+
+.content {
+  flex-grow: 1;
+  align-items: stretch;
+
+  display: flex;
+  height: 0;
+
+  .stateContent {
+    color: $baseTextColor;
+
+    overflow-y: scroll;
+    scrollbar-width: none;
+    flex-grow: 1;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .rightPanel {
+    border-left: 10px solid $baseBackgroundDark;
+
+    width: 25%;
+    min-width: 25%;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+.blockContent {
+  >div {
+    padding: 10px;
+
+    &:not(:last-child) {
+      border-bottom: 10px solid $baseBackgroundDark;
+    }
+  }
+}
+
+.textContent {
+  padding: 10px;
+  font-size: 60px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $baseBackgroundDark;
+  height: 160px;
+  padding: 0 40px;
+  width: 100%;
+}
+
+.footerItem {
+  display: flex;
+  flex-direction: row;
+  * {
+    font-size: 50px;
+    margin: 0 0 0 40px;
+  }
+}

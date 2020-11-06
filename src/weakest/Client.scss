@@ -1,0 +1,26 @@
+@import "src/common/Essentials";
+
+.players {
+  width: 100%;
+  margin: 12px 12px;
+}
+
+.player {
+  background-color: $baseBackgroundDark;
+
+  &.selected {
+    background-color: $baseBackgroundSelect !important;
+    color: $baseTextColorSelect;
+  }
+
+  &.self {
+    background-color: $baseBackgroundButton;
+  }
+
+  &.active {
+    cursor: pointer;
+    &:active {
+      transform: translateY(5px);
+    }
+  }
+}

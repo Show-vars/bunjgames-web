@@ -20,7 +20,7 @@ export default class GameApi {
         this.loadToken();
     }
 
-    connect(token = this.token) {
+    connect(token = this.token, checkGame) {
         return new Promise((resolve, reject) => {
             let timeout = setTimeout(() => reject(), 5000);
             let reconnectCount = 5;
@@ -38,9 +38,14 @@ export default class GameApi {
                     console.log("[WS] Message", data);
                     if (timeout) {
                         clearTimeout(timeout);
-                        connected = true;
-                        reconnectCount = 5;
-                        resolve();
+                        if(checkGame && !checkGame(data.message)) {
+                            this.socket.close();
+                            reject();
+                        } else {
+                            connected = true;
+                            reconnectCount = 5;
+                            resolve();
+                        }
                     }
                     this.onData(data);
                 }

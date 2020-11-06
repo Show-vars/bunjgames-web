@@ -3,7 +3,7 @@ import {Link, useHistory} from "react-router-dom";
 
 import styles from "./Admin.scss";
 import {ThemesList, ThemesGrid, QuestionsGrid} from "./Themes.jsx";
-import {AudioPlayer, ImagePlayer, Loading, VideoPlayer, Toast} from "../Common.jsx"
+import {AudioPlayer, ImagePlayer, Loading, VideoPlayer, Toast} from "../common/Essentials.jsx"
 import {getStatusName, getTypeName, getRoundName} from "./Common.js";
 import {AdminAuth} from "./Auth.jsx";
 

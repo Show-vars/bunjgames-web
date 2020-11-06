@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from "react";
 import styles from "./View.scss";
-import {AudioPlayer, ImagePlayer, VideoPlayer} from "../Common.jsx";
+import {AudioPlayer, ImagePlayer, VideoPlayer} from "../common/Essentials.jsx";
 import {ThemesList, ThemesGrid, QuestionsGrid} from "./Themes.jsx";
 import {Howl} from 'howler';
-import {Loading} from "../Common.jsx";
+import {Loading} from "../common/Essentials.jsx";
 import {getRoundName, getTypeName} from "./Common.js";
 import {AdminAuth} from "./Auth.jsx";
 
 const Music = {
-    intro: new Howl({src: ['/sounds/jeopardy/intro.wav']}),
-    themes: new Howl({src: ['/sounds/jeopardy/themes.wav']}),
+    intro: new Howl({src: ['/sounds/jeopardy/intro.mp3']}),
+    themes: new Howl({src: ['/sounds/jeopardy/themes.mp3']}),
     round: new Howl({src: ['/sounds/jeopardy/round.mp3']}),
     minute: new Howl({src: ['/sounds/jeopardy/minute.mp3']}),
     auction: new Howl({src: ['/sounds/jeopardy/auction.mp3']}),

@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
 import styles from "./View.scss";
-import {AudioPlayer, ImagePlayer, VideoPlayer} from "../Common.jsx";
+import {AudioPlayer, ImagePlayer, VideoPlayer} from "../common/Essentials.jsx";
 import {Howl, Howler} from 'howler';
 import Whirligig from "./Whirligig.jsx";
-import {Loading} from "../Common.jsx";
+import {Loading} from "../common/Essentials.jsx";
 import Auth from "./Auth.jsx";
 
 const isQuestionAvailable = (game) => {

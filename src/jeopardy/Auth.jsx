@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from "react";
 import styles from "./Auth.scss";
-import {Loading, Toast} from "../Common.jsx";
+import {Loading, Toast} from "../common/Essentials.jsx";
 import {toast} from "react-toastify";
 
 const GameCreate = ({setConnected}) => {

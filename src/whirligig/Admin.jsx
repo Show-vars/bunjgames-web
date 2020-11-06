@@ -2,8 +2,8 @@ import React, {useState, useEffect} from "react";
 import {useHistory} from "react-router-dom";
 import styles from "./Admin.scss";
 import {Link} from "react-router-dom";
-import {Loading, AudioPlayer, ImagePlayer, VideoPlayer, Toast} from "../Common.jsx";
-import Auth from "./Auth.jsx";
+import {Loading, AudioPlayer, ImagePlayer, VideoPlayer, Toast} from "../common/Essentials";
+import Auth from "./Auth";
 
 const getStatusName = (status) => {
     switch (status) {
@@ -214,7 +214,7 @@ const Footer = ({game}) => {
     const onPause = () => WHIRLIGIG_API.timer(!game.timer_paused);
 
     useEffect(() => {
-        var timer;
+        let timer;
         if (game.timer_time > 0) {
             setTime(WHIRLIGIG_API.calcTime());
             timer = setInterval(() => {

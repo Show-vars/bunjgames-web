@@ -1,0 +1,18 @@
+@import "src/Colors";
+
+.players {
+  margin: 12px 12px;
+}
+
+.player {
+  background-color: $baseBackgroundButton;
+
+  &.selected {
+    background-color: $baseBackgroundSelect !important;
+    color: $baseTextColorSelect;
+  }
+
+  &.weak {
+    color: $baseTextColorGray;
+  }
+}

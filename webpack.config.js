@@ -3,6 +3,8 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const PACKAGE = require('./package.json');
 
+const src = (uri) => path.resolve(__dirname, `src/${uri}`);
+
 module.exports = {
   entry: [
     './src/App.jsx',
@@ -35,6 +37,17 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
     ]
+  },
+  resolve: {
+    alias: {
+      common: src('common'),
+      core: src(''),
+      info: src('info'),
+      jeopardy: src('jeopardy'),
+      weakest: src('weakest'),
+      whirligig: src('whirligig'),
+    },
+    extensions: ['.js', '.jsx']
   },
   plugins:[
     new webpack.DefinePlugin({

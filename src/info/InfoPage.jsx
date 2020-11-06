@@ -18,6 +18,12 @@ const InfoPage = () => {
             <div><Link to={'/jeopardy/view'}>View</Link></div>
             <div><Link to={'/jeopardy/client'}>Client</Link></div>
         </div>
+        <div className={styles.category}>
+            <div className={styles.subtitle}>The Weakest:</div>
+            <div><Link to={'/weakest/admin'}>Admin panel</Link></div>
+            <div><Link to={'/weakest/view'}>View</Link></div>
+            <div><Link to={'/weakest/client'}>Client</Link></div>
+        </div>
     </div>
 }
 
