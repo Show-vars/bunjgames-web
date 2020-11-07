@@ -1,13 +1,17 @@
 import React, {useEffect, useState} from "react";
 import {useHistory} from "react-router-dom";
-import {Loading, Toast} from "common/Essentials";
+import {HowlWrapper, Loading, Toast} from "common/Essentials";
 import styles from "./Client.scss";
 import {PlayerAuth} from "./Auth.jsx";
 import {Howl} from "howler";
 
 const Sounds = {
-    do_bet: new Howl({src: ['/sounds/jeopardy/do_bet.mp3']}),
-    schnelle: new Howl({src: ['/sounds/jeopardy/schnelle.mp3']})
+    do_bet: HowlWrapper('/sounds/jeopardy/do_bet.mp3'),
+    schnelle: HowlWrapper('/sounds/jeopardy/schnelle.mp3')
+}
+
+const loadSounds = () => {
+    Object.values(Sounds).forEach(m => m.load());
 }
 
 const Header = () => {
@@ -114,6 +118,8 @@ const JeopardyClient = () => {
             JEOPARDY_API.getIntercomSubscriber().unsubscribe(intercomId);
         }
     }, []);
+
+    useEffect(loadSounds, []);
 
     if (!connected) return <PlayerAuth setConnected={setConnected}/>;
     if (!game) return <Loading/>

@@ -8,6 +8,12 @@ const TextContent = ({children}) => (
     </div>
 );
 
+const BlockContent = ({children}) => (
+    <div className={styles.block}>
+        {children}
+    </div>
+);
+
 const Content = ({children}) => (
     <div className={styles.content}>
         {children}
@@ -22,6 +28,7 @@ const GameView = ({children}) => (
 
 export {
     TextContent,
+    BlockContent,
     Content,
     GameView,
 }

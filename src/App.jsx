@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import {Howler} from 'howler';
 import styles from './App.scss';
 import { BrowserRouter, withRouter } from 'react-router-dom'
 import { Switch, Route } from "react-router";
@@ -21,6 +22,8 @@ require("./Polyfils.js");
 window.WHIRLIGIG_API = new WhirligigApi(BunjGamesConfig.WHIRLIGIG_API_ENDPOINT, BunjGamesConfig.WHIRLIGIG_WS_ENDPOINT);
 window.JEOPARDY_API = new JeopardyApi(BunjGamesConfig.JEOPARDY_API_ENDPOINT, BunjGamesConfig.JEOPARDY_WS_ENDPOINT);
 window.WEAKEST_API = new WeakestApi(BunjGamesConfig.WEAKEST_API_ENDPOINT, BunjGamesConfig.WEAKEST_WS_ENDPOINT);
+
+Howler.volume(0.5);
 
 const App = () => {
     return <BrowserRouter>

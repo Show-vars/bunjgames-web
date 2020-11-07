@@ -13,6 +13,9 @@ const Question = ({game}) => {
     const {question, answer} = game.question;
 
     return <BlockContent>
+        {game.state === "final_questions" && game.players.filter(player => !player.is_weak).map(player =>
+            <div key={player.id}>{player.name} : {player.right_answers}</div>
+        )}
         {game.state === "questions" && <Timer/>}
         <div>{question}</div>
         <div>{answer}</div>
@@ -68,13 +71,13 @@ const useStateContent = (game) => {
             return <TextContent>Round {game.round}</TextContent>
         case "questions":
         case "final_questions":
-            return <Question game={game}/>;
+            return <Question game={game}/>
         case "weakest_choose":
             return <WeakestContent game={game}/>;
         case "weakest_reveal":
             return <WeakestContent game={game}/>;
         case "final":
-            return "";
+            return <TextContent>Choose player to start</TextContent>;
         case "end":
             return <TextContent>Game over</TextContent>;
     }
@@ -86,24 +89,30 @@ const useControl = (game) => {
     const onAnswerClick = (isCorrect) => WEAKEST_API.answer_correct(isCorrect);
     const onBankClick = () => WEAKEST_API.save_bank();
     const onFinalAnswererClick = (playerId) => WEAKEST_API.select_final_answerer(playerId);
+    const onGongClick = () => WEAKEST_API.intercom("gong");
 
+    const buttons = [<Button onClick={() => onGongClick()}>Gong</Button>];
     switch (game.state) {
         case "questions":
         case "final_questions":
-            return [
+            buttons.push([
                 <Button onClick={() => onBankClick()}>Bank</Button>,
                 <Button onClick={() => onAnswerClick(false)}>Wrong</Button>,
                 <Button onClick={() => onAnswerClick(true)}>Right</Button>
-            ];
+            ]);
+            break;
         case "final":
-            return game.players.filter(player => !player.is_weak).map(player =>
+            buttons.push(game.players.filter(player => !player.is_weak).map(player =>
                     <Button key={player.id} onClick={() => onFinalAnswererClick(player.id)}>{player.name}</Button>,
-                )
+                ));
+            break;
         case "weakest_choose":
         case "end":
-            return "";
+            break;
+        default:
+            buttons.push(<Button onClick={onNextClick}>Next</Button>);
     }
-    return <Button onClick={onNextClick}>Next</Button>;
+    return buttons;
 };
 
 const WeakestAdmin = () => {

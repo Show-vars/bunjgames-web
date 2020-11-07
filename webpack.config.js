@@ -66,5 +66,6 @@ module.exports = {
     historyApiFallback: {
       index: 'index.html'
     },
+    disableHostCheck: true,
   }
 };

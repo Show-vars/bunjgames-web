@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import styles from "./View.scss";
-import {AudioPlayer, ImagePlayer, VideoPlayer} from "../common/Essentials.jsx";
+import {AudioPlayer, HowlWrapper, ImagePlayer, VideoPlayer} from "../common/Essentials.jsx";
 import {ThemesList, ThemesGrid, QuestionsGrid} from "./Themes.jsx";
 import {Howl} from 'howler';
 import {Loading} from "../common/Essentials.jsx";
@@ -8,17 +8,23 @@ import {getRoundName, getTypeName} from "./Common.js";
 import {AdminAuth} from "./Auth.jsx";
 
 const Music = {
-    intro: new Howl({src: ['/sounds/jeopardy/intro.mp3']}),
-    themes: new Howl({src: ['/sounds/jeopardy/themes.mp3']}),
-    round: new Howl({src: ['/sounds/jeopardy/round.mp3']}),
-    minute: new Howl({src: ['/sounds/jeopardy/minute.mp3']}),
-    auction: new Howl({src: ['/sounds/jeopardy/auction.mp3']}),
-    bagcat: new Howl({src: ['/sounds/jeopardy/bagcat.mp3']}),
-    game_end: new Howl({src: ['/sounds/jeopardy/game_end.mp3']}),
+    intro: HowlWrapper('/sounds/jeopardy/intro.mp3'),
+    themes: HowlWrapper('/sounds/jeopardy/themes.mp3'),
+    round: HowlWrapper('/sounds/jeopardy/round.mp3'),
+    minute: HowlWrapper('/sounds/jeopardy/minute.mp3'),
+    auction: HowlWrapper('/sounds/jeopardy/auction.mp3'),
+    bagcat: HowlWrapper('/sounds/jeopardy/bagcat.mp3'),
+    game_end: HowlWrapper('/sounds/jeopardy/game_end.mp3'),
 }
 
 const Sounds = {
-    skip: new Howl({src: ['/sounds/jeopardy/skip.wav']}),
+    skip: HowlWrapper('/sounds/jeopardy/skip.mp3'),
+}
+
+
+const loadSounds = () => {
+    Object.values(Music).forEach(m => m.load());
+    Object.values(Sounds).forEach(m => m.load());
 }
 
 const resetSounds = () => {
@@ -125,8 +131,11 @@ const JeopardyView = () => {
         }
     }, []);
 
+    useEffect(loadSounds, []);
+
     if (!connected) return <AdminAuth setConnected={setConnected}/>;
     if (!game) return <Loading/>
+
 
     return <div className={styles.view}>
         <Content game={game}/>

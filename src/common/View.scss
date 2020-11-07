@@ -6,6 +6,19 @@
   }
 }
 
+.block {
+  font-size: 80px !important;
+  color: $baseTextColor;
+
+  >div {
+    padding: 10px;
+
+    &:not(:last-child) {
+      border-bottom: 10px solid $baseBackgroundDark;
+    }
+  }
+}
+
 .content {
   width: 100%;
   height: 100%;

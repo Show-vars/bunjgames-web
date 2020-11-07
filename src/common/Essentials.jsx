@@ -4,7 +4,16 @@ import styles from "./Essentials.scss";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {Link} from "react-router-dom";
+import {Howl} from "howler";
 
+const HowlWrapper = (src, loop = false, volume = 1.0) => {
+    return new Howl({
+        src: [src],
+        loop: loop,
+        volume: volume,
+        preload: false
+    });
+}
 const getMediaUrl = (game, url) => url.startsWith("/") ? `${BunjGamesConfig.MEDIA}${game.name}/${game.token}${url}` : url;
 
 const ImagePlayer = ({game, url}) => (
@@ -87,8 +96,8 @@ const useTimer = (api, onTimerEnd) => {
     useEffect(() => {
         let timer;
         if (time <= 0) {
-            onTimerEnd();
-        } else  if (time > 0) {
+            if(onTimerEnd) onTimerEnd();
+        } else if (time > 0) {
             timer = setInterval(() => {
                 setTime(api.calcTime());
             }, 1000);
@@ -100,6 +109,7 @@ const useTimer = (api, onTimerEnd) => {
 }
 
 export {
+    HowlWrapper,
     ImagePlayer, AudioPlayer, VideoPlayer,
     Loading, Toast,
     Button, ButtonLink,

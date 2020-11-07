@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import styles from "./View.scss";
-import {AudioPlayer, ImagePlayer, VideoPlayer} from "../common/Essentials.jsx";
+import {AudioPlayer, HowlWrapper, ImagePlayer, VideoPlayer} from "../common/Essentials.jsx";
 import {Howl, Howler} from 'howler';
 import Whirligig from "./Whirligig.jsx";
 import {Loading} from "../common/Essentials.jsx";
@@ -27,29 +27,35 @@ const isWhirligigAvailable = (game) => {
 const QuestionsEndMusic = {
     current: 0,
     music: [
-        new Howl({src: ['/sounds/whirligig/question_end_1.mp3']}),
-        new Howl({src: ['/sounds/whirligig/question_end_2.mp3']}),
-        new Howl({src: ['/sounds/whirligig/question_end_3.mp3']}),
-        new Howl({src: ['/sounds/whirligig/question_end_4.mp3']}),
-        new Howl({src: ['/sounds/whirligig/question_end_5.mp3']}),
+        HowlWrapper('/sounds/whirligig/question_end_1.mp3'),
+        HowlWrapper('/sounds/whirligig/question_end_2.mp3'),
+        HowlWrapper('/sounds/whirligig/question_end_3.mp3'),
+        HowlWrapper('/sounds/whirligig/question_end_4.mp3'),
+        HowlWrapper('/sounds/whirligig/question_end_5.mp3'),
     ]
 }
 
 const Music = {
-    start: new Howl({src: ['/sounds/whirligig/start.mp3']}),
-    intro: new Howl({src: ['/sounds/whirligig/intro.mp3']}),
-    questions: new Howl({src: ['/sounds/whirligig/questions.mp3']}),
-    whirligig: new Howl({src: ['/sounds/whirligig/whirligig.mp3']}),
-    end_defeat: new Howl({src: ['/sounds/whirligig/end_defeat.mp3']}),
-    end_victory: new Howl({src: ['/sounds/whirligig/end_victory.mp3']}),
-    black_box: new Howl({src: ['/sounds/whirligig/black_box.mp3']}),
+    start: HowlWrapper('/sounds/whirligig/start.mp3'),
+    intro: HowlWrapper('/sounds/whirligig/intro.mp3'),
+    questions: HowlWrapper('/sounds/whirligig/questions.mp3'),
+    whirligig: HowlWrapper('/sounds/whirligig/whirligig.mp3'),
+    end_defeat: HowlWrapper('/sounds/whirligig/end_defeat.mp3'),
+    end_victory: HowlWrapper('/sounds/whirligig/end_victory.mp3'),
+    black_box: HowlWrapper('/sounds/whirligig/black_box.mp3'),
 }
 
 const Sounds = {
-    sig1: new Howl({src: ['/sounds/whirligig/sig1.mp3']}),
-    sig2: new Howl({src: ['/sounds/whirligig/sig2.mp3']}),
-    sig3: new Howl({src: ['/sounds/whirligig/sig3.mp3']}),
-    gong: new Howl({src: ['/sounds/whirligig/gong.mp3']}),
+    sig1: HowlWrapper('/sounds/whirligig/sig1.mp3'),
+    sig2: HowlWrapper('/sounds/whirligig/sig2.mp3'),
+    sig3: HowlWrapper('/sounds/whirligig/sig3.mp3'),
+    gong: HowlWrapper('/sounds/whirligig/gong.mp3'),
+}
+
+const loadSounds = () => {
+    QuestionsEndMusic.music.forEach(m => m.load());
+    Object.values(Music).forEach(m => m.load());
+    Object.values(Sounds).forEach(m => m.load());
 }
 
 const resetSounds = () => {
@@ -193,6 +199,8 @@ const WhirligigView = () => {
             resetSounds();
         }
     }, []);
+
+    useEffect(loadSounds, []);
 
     if (!connected) {
         return <Auth setConnected={setConnected}/>;

@@ -1,19 +1,37 @@
-import React from "react";
-import {Loading, useGame, useAuth, useTimer} from "common/Essentials";
-import {Howl} from 'howler';
+import React, {useEffect, useState} from "react";
+import {Loading, useGame, useAuth, useTimer, HowlWrapper, Button} from "common/Essentials";
 import {AdminAuth} from "common/Auth";
-import {Content, GameView, TextContent} from "common/View";
+import {Content, GameView, TextContent, BlockContent} from "common/View";
 
 const Music = {
-    // intro: new Howl({src: ['/sounds/weakest/intro.wav']}),
+    intro: HowlWrapper('/sounds/weakest/intro.mp3'),
+    background: HowlWrapper('/sounds/weakest/background.ogg', true, 0.5),
+    questions: HowlWrapper('/sounds/weakest/questions.ogg', true, 0.5),
 }
 
 const Sounds = {
+    gong: HowlWrapper('/sounds/weakest/gong.ogg'),
+    question_start: HowlWrapper('/sounds/weakest/question_start.ogg'),
+    question_end: HowlWrapper('/sounds/weakest/question_end.ogg'),
+    weakest_reveal: HowlWrapper('/sounds/weakest/weakest_reveal.mp3', false, 0.5),
 }
 
-const resetSounds = () => {
+const loadSounds = () => {
+    Object.values(Music).forEach(m => m.load());
+    Object.values(Sounds).forEach(m => m.load());
+}
+
+const stopMusic = () => {
     Object.values(Music).forEach(m => m.stop());
 };
+
+const changeMusic = (old, next) => {
+    if (old !== next) {
+        stopMusic();
+        if (Music[next]) Music[next].play();
+        return next;
+    }
+}
 
 const Timer = () => {
     const time = useTimer(WEAKEST_API);
@@ -24,7 +42,11 @@ const Timer = () => {
 }
 
 const FinalQuestions = ({game}) => {
-    return ""
+    return <BlockContent>
+        {game.players.filter(player => !player.is_weak).map(player =>
+            <div key={player.id}>{player.name} : {player.right_answers}</div>
+        )}
+    </BlockContent>;
 }
 
 const useStateContent = (game) => {
@@ -51,27 +73,36 @@ const useStateContent = (game) => {
 };
 
 const WeakestView = () => {
+    const [music, setMusic] = useState();
     const game = useGame(WEAKEST_API, (game) => {
-        resetSounds();
-        switch (game.state) {
-            // case "intro": Music.intro.play(); break;
-            // case "round": Music.round.play(); break;
-            // case "round_themes": Music.themes.play(); break;
-            // case "question_event": {
-            //     if (game.question.type === "auction") {
-            //         Music.auction.play();
-            //     } else if (game.question.type === "bagcat") {
-            //         Music.bagcat.play();
-            //     }
-            // } break;
-            // case "final_answer": Music.minute.play(); break;
-            // case "game_end": Music.game_end.play(); break;
+        if (["intro"].includes(game.state)) {
+            setMusic(changeMusic(music, "intro"));
+        } else if (["questions", "final_questions"].includes(game.state)) {
+            setMusic(changeMusic(music, "questions"));
+        } else {
+            setMusic(changeMusic(music, "background"));
+        }
+
+        if (["questions", "final_questions"].includes(game.state)) {
+            Sounds.question_start.play();
+        } else if (["weakest_reveal"].includes(game.state)) {
+            Sounds.weakest_reveal.play();
+        } else if (["weakest_choose", "end"].includes(game.state)) {
+            Sounds.question_end.play();
         }
     }, (message) => {
         switch (message) {
-            case "sound_stop": resetSounds(); break;
+            case "gong":
+                Sounds.gong.play();
+                break;
+            case "sound_stop":
+                setMusic(changeMusic(music, ""));
+                break;
         }
     });
+
+    useEffect(loadSounds, []);
+
     const [connected, setConnected] = useAuth(WEAKEST_API);
 
     if (!connected) return <AdminAuth api={WEAKEST_API} setConnected={setConnected}/>;
