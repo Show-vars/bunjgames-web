@@ -1,229 +1,113 @@
-@import "src/common/Essentials";
+@import "src/Colors";
 
-.admin {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: #31495e;
+.media {
+  img, video {
+    max-width: 600px;
+    max-height: 400px;
+  }
 
-  .header {
-    height: 80px;
-    background-color: #333435;
+  audio {
+    height: 40px !important;
+  }
+}
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.list {
+  overflow-y: scroll;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
-    padding: 0 40px;
+  padding: 10px;
 
-    .logo {
-      color: white;
+  flex: 0 1 auto;
+  min-height: 0;
+
+  .item {
+    color: $baseTextColor;
+    font-size: 20px;
+    &:not(:last-child) {
+      margin-bottom: 10px;
     }
 
-    .token {
-      color: white;
-    }
-
-    .nav {
+    .short {
       display: flex;
+      flex-wrap: nowrap;
+
+      cursor: pointer;
+
+      :first-child {
+        flex-grow: 1;
+      }
+    }
+
+    .questions {
+      .question {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        padding: 10px;
+
+        :first-child {
+          flex-grow: 1;
+        }
+      }
+    }
+  }
+}
+
+.scoreControl {
+  color: $baseTextColor;
+  border-top: 10px solid #333435;
+
+  padding: 10px;
+
+  .control {
+    text-align: center;
+
+    &:not(:last-child) {
+      margin-bottom: 10px;
+    }
+
+    div {
+      margin: 0 10px;
+    }
+
+    div:last-child {
+      display: flex;
+      justify-content: center;
       align-items: center;
-      a {
-        margin: 0 0 0 10px;
-      }
-
-      .mute {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-      }
     }
 
-  }
-
-  .content {
-    flex-grow: 1;
-    align-items: stretch;
-
-    display: flex;
-    height: 0;
-
-    .bigitem {
-      color: $baseTextColor;
-
-      overflow-y: scroll;
-      scrollbar-width: none;
-      flex-grow: 1;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-
-      .biginfo {
-        padding: 10px;
-        border-bottom: 5px solid #333435;
-      }
-
-      .bigquestion {
-        padding: 10px;
-
-        img, video {
-          max-width: 400px;
-        }
-
-        audio {
-          height: 40px !important;
-        }
-
-
-        .question {
-          div:first-child {
-
-          }
-
-          div:not(:first-child) {
-            font-size: 40px;
-          }
-        }
-
-        .answer {
-          margin-top: 50px;
-        }
-      }
-    }
-
-
-    .rightPanel {
-      border-left: 10px solid #333435;
-
-      width: 30%;
-      min-width: 30%;
-      overflow: hidden;
-
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      .list {
-        overflow-y: scroll;
-        scrollbar-width: none;
-        &::-webkit-scrollbar {
-          display: none;
-        }
-
-        padding: 10px;
-
-        flex: 0 1 auto;
-        min-height: 0;
-
-        .item {
-          color: $baseTextColor;
-          font-size: 24px;
-          margin-bottom: 20px;
-
-
-          .short {
-            display: flex;
-            flex-wrap: nowrap;
-
-            cursor: pointer;
-
-            :first-child {
-              flex-grow: 1;
-            }
-          }
-
-          .questions {
-            .question {
-              display: flex;
-              flex-direction: column;
-              flex-wrap: nowrap;
-              padding: 10px;
-
-              :first-child {
-                flex-grow: 1;
-              }
-            }
-          }
-        }
-      }
-
-      .scoreControl {
-        color: $baseTextColor;
-        border-top: 10px solid #333435;
-
-        padding: 10px;
-
-        .control {
-          text-align: center;
-
-          &:not(:last-child) {
-            margin-bottom: 10px;
-          }
-
-          div {
-            margin: 0 10px;
-          }
-          div:last-child {
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          }
-          .button {
-            height: 30px;
-            width: 30px;
-
-            padding: 0;
-          }
-        }
-
-      }
+    .button {
+      height: 30px;
+      width: 30px;
+      padding: 0;
     }
   }
+}
 
-  .footer {
-    display: flex;
-    align-items: center;
-    background-color: #333435;
-    height: 160px;
-    padding: 0 40px;
-    justify-content: space-between;
+.score {
+  font-size: 60px;
+  font-weight: bold;
+}
 
-    .score {
-
-      color: white;
-      font-size: 50px;
-    }
-
-    .state {
-      flex-grow: 1;
-
-      font-size: 50px;
-      color: white;
-      text-align: center;
-    }
-
-    .timer {
-      .time {
-        text-align: center;
-        color: white;
-        font-size: 50px;
-      }
-
-      .button {
-        min-width: 105px;
-      }
-    }
-
-    .next {
-      font-size: 50px;
-      margin: 0 0 0 40px;
-    }
-
-    .gong {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin: 0 0 0 40px;
-    }
+.timer {
+  .time {
+    text-align: center;
+    font-size: 40px;
   }
+
+  .timerButton {
+    font-size: 22px;
+    height: 40px;
+    width: 105px;
+  }
+}
+
+.gong {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  font-size: 22px;
 }

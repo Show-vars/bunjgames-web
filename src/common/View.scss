@@ -1,24 +1,5 @@
 @import "src/common/Essentials";
 
-.text {
-  p {
-    font-size: 80px !important;
-  }
-}
-
-.block {
-  font-size: 80px !important;
-  color: $baseTextColor;
-
-  >div {
-    padding: 10px;
-
-    &:not(:last-child) {
-      border-bottom: 10px solid $baseBackgroundDark;
-    }
-  }
-}
-
 .content {
   width: 100%;
   height: 100%;
@@ -61,4 +42,23 @@
   background-color: $baseBackground;
   display: flex;
   flex-direction: column;
+}
+
+.text {
+  p {
+    font-size: 80px;
+  }
+}
+
+.block {
+  font-size: 80px;
+  color: $baseTextColor;
+
+  >div {
+    padding: 10px;
+
+    &:not(:last-child) {
+      border-bottom: 10px solid $baseBackgroundDark;
+    }
+  }
 }

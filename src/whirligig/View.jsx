@@ -1,28 +1,10 @@
 import React, {useEffect, useState} from "react";
-import styles from "./View.scss";
-import {AudioPlayer, HowlWrapper, ImagePlayer, VideoPlayer} from "../common/Essentials.jsx";
-import {Howl, Howler} from 'howler';
-import Whirligig from "./Whirligig.jsx";
-import {Loading} from "../common/Essentials.jsx";
-import Auth from "./Auth.jsx";
+import {AudioPlayer, HowlWrapper, ImagePlayer, VideoPlayer, Loading, useGame, useAuth} from "common/Essentials";
+import {AdminAuth} from "common/Auth";
+import Whirligig from "whirligig/Whirligig";
+import styles from "whirligig/View.scss";
+import {Content, GameView, TextContent} from "common/View";
 
-const isQuestionAvailable = (game) => {
-    const {cur_question} = game;
-
-    return ["question_start", "question_discussion", "answer", "extra_minute", "club_help"].includes(game.state)
-        && ["text", "image", "audio", "video"].some(v => cur_question[v]);
-}
-
-const isAnswerAvailable = (game) => {
-    const {cur_question} = game;
-
-    return ["right_answer"].includes(game.state)
-        && ["answer_text", "answer_image", "answer_audio", "answer_video"].some(v => cur_question[v]);
-}
-
-const isWhirligigAvailable = (game) => {
-    return ["question_whirligig"].includes(game.state);
-}
 
 const QuestionsEndMusic = {
     current: 0,
@@ -63,10 +45,24 @@ const resetSounds = () => {
     Object.values(Music).forEach(m => m.stop());
 };
 
-const Score = ({game}) => <div className={styles.score}>{game.connoisseurs_score} : {game.viewers_score}</div>;
+const isQuestionAvailable = (game) => {
+    const {cur_question} = game;
+    return ["question_start", "question_discussion", "answer", "extra_minute", "club_help"].includes(game.state)
+        && ["text", "image", "audio", "video"].some(v => cur_question[v]);
+}
+
+const isAnswerAvailable = (game) => {
+    const {cur_question} = game;
+    return ["right_answer"].includes(game.state)
+        && ["answer_text", "answer_image", "answer_audio", "answer_video"].some(v => cur_question[v]);
+}
+
+const isWhirligigAvailable = (game) => {
+    return ["question_whirligig"].includes(game.state);
+}
 
 const QuestionMessage = ({game, text, image, audio, video}) => {
-    return <div className={styles.message}>
+    return <div className={styles.media}>
         {text && <div><p>{text}</p></div>}
         {image && <div><ImagePlayer autoPlay game={game} url={image}/></div>}
         {["question_start", "answer"].includes(game.state) && audio &&
@@ -76,86 +72,57 @@ const QuestionMessage = ({game, text, image, audio, video}) => {
     </div>
 }
 
-const Content = ({game}) => {
-    const {cur_question} = game;
-    const onWhirligigReady = () => {
-        Music.whirligig.stop();
-        setTimeout(function() {
-            if (isWhirligigAvailable(game)) {
-                //WHIRLIGIG_API.nextState("question_whirligig");
-            }
-        }.bind(this), 3000);
-    }
+const triggerTimerSound = (game, time) => {
+    if (!game.cur_item) return;
 
-    let content;
+    if (game.state === "extra_minute" || game.state !== "club_help" && game.cur_item.type === "standard") {
+        switch (time) {
+            case 60:
+                Sounds.sig1.play();
+                break;
+            case 10:
+                Sounds.sig2.play();
+                break;
+            case 0:
+                Sounds.sig3.play();
+                break;
+        }
+    } else {
+        switch (time) {
+            case 20:
+                Sounds.sig1.play();
+                break;
+            case 0:
+                Sounds.sig3.play();
+                break;
+        }
+    }
+}
+
+const useStateContent = (game) => {
+    const onWhirligigReady = () => Music.whirligig.stop();
+
     if (isWhirligigAvailable(game)) {
-        content = <Whirligig game={game} callback={onWhirligigReady}/>
+        return <Whirligig game={game} callback={onWhirligigReady}/>
     } else if (isQuestionAvailable(game)) {
-        const {text, image, audio, video} = cur_question;
-        content = <QuestionMessage
+        const {text, image, audio, video} = game.cur_question;
+        return <QuestionMessage
             game={game} text={text} image={image} audio={audio} video={video}
         />
     } else if (isAnswerAvailable(game)) {
-        const {answer_text, answer_image, answer_audio, answer_video} = cur_question;
-        content = <QuestionMessage
+        const {answer_text, answer_image, answer_audio, answer_video} = game.cur_question;
+        return <QuestionMessage
             game={game} text={answer_text} image={answer_image} audio={answer_audio} video={answer_video}
         />
     } else {
-        content = <Score game={game}/>;
+        return <TextContent className={styles.score}>{game.connoisseurs_score} : {game.viewers_score}</TextContent>;
     }
-
-    return <div className={styles.content}>
-        {content}
-    </div>
 }
 
 const WhirligigView = () => {
-    const [game, setGame] = useState();
-    const [connected, setConnected] = useState();
-
-    useEffect(() => setConnected(WHIRLIGIG_API.isConnected()), [])
-
-    const triggerTimerSound = (time) => {
-        if (!game.cur_item) return;
-
-        if (game.state === "extra_minute" || game.state !== "club_help" && game.cur_item.type === "standard") {
-            switch (time) {
-                case 60:
-                    Sounds.sig1.play();
-                    break;
-                case 10:
-                    Sounds.sig2.play();
-                    break;
-                case 0:
-                    Sounds.sig3.play();
-                    break;
-            }
-        } else {
-            switch (time) {
-                case 20:
-                    Sounds.sig1.play();
-                    break;
-                case 0:
-                    Sounds.sig3.play();
-                    break;
-            }
-        }
-    };
-
-    const triggerIntercom = (message) => {
-        if(message === "gong") {
-            Sounds.gong.play();
-        } else if(message === "sound_stop") {
-            resetSounds();
-        }
-    };
-
-    const triggerState = (game) => {
-        const {state} = game;
-
+    const game = useGame(WHIRLIGIG_API, (game) => {
         resetSounds();
-
-        switch (state) {
+        switch (game.state) {
             case "start": Music.start.play(); break;
             case "intro": Music.intro.play(); break;
             case "questions": Music.questions.play(); break;
@@ -172,47 +139,41 @@ const WhirligigView = () => {
                 }
             } break;
         }
-    };
+    }, (message) => {
+        switch (message) {
+            case "gong":
+                Sounds.gong.play();
+                break;
+            case "sound_stop":
+                resetSounds();
+                break;
+        }
+    });
+
+    useEffect(loadSounds, []);
 
     useEffect(() => {
         if (!game) return;
 
-        var timer;
+        let timer;
         if (game.timer_time > 0) {
-            triggerTimerSound(WHIRLIGIG_API.calcTime());
+            triggerTimerSound(game, WHIRLIGIG_API.calcTime());
             timer = setInterval(() => {
-                triggerTimerSound(WHIRLIGIG_API.calcTime());
+                triggerTimerSound(game, WHIRLIGIG_API.calcTime());
             }, 1000);
         }
 
         return () => timer && clearInterval(timer);
-    });
+    }, [game]);
 
-    useEffect(() => {
-        const gameId = WHIRLIGIG_API.getGameSubscriber().subscribe(setGame);
-        const stateId = WHIRLIGIG_API.getStateSubscriber().subscribe(triggerState);
-        const intercomId = WHIRLIGIG_API.getIntercomSubscriber().subscribe(triggerIntercom);
-        return () => {
-            WHIRLIGIG_API.getGameSubscriber().unsubscribe(gameId);
-            WHIRLIGIG_API.getStateSubscriber().unsubscribe(stateId);
-            WHIRLIGIG_API.getIntercomSubscriber().unsubscribe(intercomId);
-            resetSounds();
-        }
-    }, []);
+    const [connected, setConnected] = useAuth(WHIRLIGIG_API);
 
-    useEffect(loadSounds, []);
+    if (!connected) return <AdminAuth api={WHIRLIGIG_API} setConnected={setConnected}/>;
+    if (!game) return <Loading/>;
 
-    if (!connected) {
-        return <Auth setConnected={setConnected}/>;
-    }
-
-    if (!game) {
-        return <Loading/>;
-    }
-
-    return <div className={styles.view}>
-        <Content game={game}/>
-    </div>;
+    return <GameView>
+        <Content>{useStateContent(game)}</Content>
+    </GameView>
 }
 
 export default WhirligigView;

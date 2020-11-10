@@ -1,200 +1,80 @@
-@import "src/common/Essentials";
-
-.admin {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: $baseBackground;
+@import "src/Colors";
 
 
-  .players {
-    display: flex;
-    flex-direction: row;
-
-    .player {
-      margin: 0 5px;
-      min-width: 12vw;
-
-      :first-child {
-        font-weight: bold;
-        font-size: 30px;
-      }
-    }
-  }
-
-  .header {
-    height: 80px;
-    background-color: $baseBackgroundDark;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 0 40px;
-
-    .logo {
-      color: white;
-    }
-
-    .token {
-      font-size: 30px;
-      color: white;
-    }
-
-    .state {
-      font-size: 30px;
-      color: white;
-      text-align: center;
-    }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      a {
-        margin: 0 0 0 10px;
-      }
-
-      .mute {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-      }
-    }
-
-  }
-
-  .content {
-    flex-grow: 1;
-    align-items: stretch;
-
-    display: flex;
-    height: 0;
-
-    .stateContent {
-      color: $baseTextColor;
-
-      overflow-y: scroll;
-      scrollbar-width: none;
-      flex-grow: 1;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-
-      .padding {
-        padding: 10px;
-      }
-
-      .text {
-        font-size: 40px;
-        padding: 10px;
-      }
-
-      .bigquestion {
-        .question {
-          padding: 10px;
-          border-bottom: 10px solid $baseBackgroundDark;
-        }
-
-        .answer {
-          padding: 10px;
-        }
-
-        img {
-          display: block;
-          height: 100%;
-          width: 100%;
-          max-height: 300px;
-          object-fit: contain;
-        }
-
-        audio {
-          padding: 10px;
-          height: 100%;
-          min-height: 50px;
-          display: block;
-        }
-
-        video {
-          display: block;
-          height: 100%;
-          width: 100%;
-          max-height: 300px;
-        }
-      }
-
-      .questionEvent {
-        padding: 10px;
-        .type {
-          font-size: 40px;
-        }
-      }
-
-      .players {
-        flex-direction: column;
-        .player {
-          margin: 5px 0;
-        }
-      }
-    }
-
-
-    .rightPanel {
-      border-left: 10px solid $baseBackgroundDark;
-
-      width: 25%;
-      min-width: 25%;
-      overflow: hidden;
-
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-
-      .balanceControl {
-        color: $baseTextColor;
-        padding: 16px;
-
-        .name {
-          font-size: 26px;
-        }
-
-        .save {
-          font-size: 26px;
-        }
-
-        >:not(:last-child) {
-          margin-bottom: 16px;
-        }
-
-      }
-    }
-  }
-
-  .footer {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    background-color: $baseBackgroundDark;
-    height: 160px;
-    padding: 0 40px;
+.media {
+  img {
+    display: block;
+    height: 100%;
     width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+  }
 
-    .bet {
-      margin-left: 40px;
-      max-width: 200px;
+  audio {
+    padding: 10px;
+    height: 100%;
+    min-height: 50px;
+    display: block;
+  }
+
+  video {
+    display: block;
+    height: 100%;
+    width: 100%;
+    max-height: 300px;
+  }
+}
+
+.type {
+  font-size: 40px;
+}
+
+.players {
+  flex-direction: row;
+
+  :not(:last-child) {
+    margin-bottom: 0;
+  }
+}
+
+.player {
+  overflow: visible;
+  background-color: $baseBackgroundButton;
+  margin: 0 10px;
+
+  min-width: 150px;
+  min-height: 80px;
+
+  &.selected {
+    background-color: $baseBackgroundSelect !important;
+    color: $baseTextColorSelect;
+  }
+
+  &.active {
+    cursor: pointer;
+    &:active {
+      transform: translateY(5px);
     }
+  }
+}
 
-    .buttons {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      .button {
-        font-size: 50px;
-        margin: 0 0 0 40px;
-      }
-    }
+.bet {
+  margin-left: 40px;
+  max-width: 200px;
+}
 
+.balanceControl {
+  padding: 10px;
 
+  .name {
+    font-size: 26px;
+  }
+
+  .save {
+    font-size: 26px;
+  }
+
+  >:not(:last-child) {
+    margin-bottom: 16px;
   }
 }

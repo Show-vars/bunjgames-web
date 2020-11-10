@@ -15,26 +15,6 @@
     flex-direction: column;
   }
 
-  .header {
-    display: flex;
-
-    @media (orientation: landscape) {
-      flex-direction: column;
-      justify-content: flex-start;
-    }
-
-    @media (orientation: portrait) {
-      flex-direction: row;
-      justify-content: flex-end;
-    }
-
-    .exit {
-      padding: 10px;
-      font-size: 30px;
-      color: $baseTextColor;
-    }
-  }
-
   .content {
     flex-grow: 1;
 

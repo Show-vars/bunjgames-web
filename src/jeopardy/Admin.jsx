@@ -1,45 +1,35 @@
 import React, {useEffect, useState} from "react";
-import {Link, useHistory} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
-import styles from "./Admin.scss";
-import {ThemesList, ThemesGrid, QuestionsGrid} from "./Themes.jsx";
-import {AudioPlayer, ImagePlayer, Loading, VideoPlayer, Toast} from "../common/Essentials.jsx"
-import {getStatusName, getTypeName, getRoundName} from "./Common.js";
-import {AdminAuth} from "./Auth.jsx";
+import {AdminAuth} from "common/Auth";
+import {
+    AudioPlayer,
+    ImagePlayer,
+    Loading,
+    VideoPlayer,
+    useGame,
+    useAuth,
+    OvalButton,
+    ButtonLink, Button, Input, List, ListItem
+} from "common/Essentials"
+import {BlockContent, Content, Footer, FooterItem, GameAdmin, Header, TextContent} from "common/Admin";
 
+import {ThemesList, ThemesGrid, QuestionsGrid} from "jeopardy/Themes";
+import {getStatusName, getTypeName, getRoundName} from "jeopardy/Common";
+import styles from "jeopardy/Admin.scss";
 
-const Header = ({game}) => {
-    const history = useHistory();
-
-    const onSoundStop = () => JEOPARDY_API.intercom("sound_stop");
-
-    const onLogout = () => {
-        JEOPARDY_API.logout();
-        history.push("/");
-    };
-    return <div className={styles.header}>
-        <div className={styles.logo}>Admin dashboard</div>
-        <div className={styles.token}>{game.token.toUpperCase()}</div>
-        <div className={styles.state}>{getStatusName(game.state)}</div>
-        <div className={styles.nav}>
-            {<div className={css(styles.button, styles.mute)} onClick={onSoundStop}><i className="fas fa-volume-mute"/>
-            </div>}
-            <Link className={styles.button} to={"/"}>Home</Link>
-            <Link className={styles.button} to={"/jeopardy/view"}>View</Link>
-            <a className={styles.button} onClick={onLogout}>Logout</a>
-        </div>
-    </div>
-}
 
 const QuestionEvent = ({question}) => {
     const {
         type, custom_theme, value
     } = question;
-    return <div className={styles.questionEvent}>
-        <div className={styles.type}>{getTypeName(type)}</div>
-        {custom_theme && <div>Custom theme: {custom_theme}</div>}
-        <div>Value: {value}</div>
-    </div>
+    return <BlockContent>
+        <div>
+            <div className={styles.type}>{getTypeName(type)}</div>
+            {custom_theme && <div>Custom theme: {custom_theme}</div>}
+            <div>Value: {value}</div>
+        </div>
+    </BlockContent>
 }
 
 const Question = ({game}) => {
@@ -48,19 +38,18 @@ const Question = ({game}) => {
         answer, comment, answer_text, answer_image, answer_audio, answer_video
     } = game.question;
 
-    console.log(audio)
-
-    return <div className={styles.bigquestion}>
-        <div className={styles.question}>
+    return <BlockContent>
+        <div>
             <div>Value: {value}</div>
             {custom_theme && <div>Custom theme: {custom_theme}</div>}
+        </div>
+        <div className={styles.media}>
             <div>{text && <p>{text}</p>}</div>
             <div>{image && <ImagePlayer controls={true} game={game} url={image}/>}</div>
             <div>{audio && <AudioPlayer controls={true} game={game} url={audio}/>}</div>
             <div>{video && <VideoPlayer controls={true} game={game} url={video}/>}</div>
         </div>
-
-        <div className={styles.answer}>
+        <div className={styles.media}>
             <div>{answer}</div>
             {comment && <div>Comment: {comment}</div>}
             <div>{answer_text && <p>{answer_text}</p>}</div>
@@ -68,7 +57,7 @@ const Question = ({game}) => {
             <div>{answer_audio && <AudioPlayer controls={true} game={game} url={answer_audio}/>}</div>
             <div>{answer_video && <VideoPlayer controls={true} game={game} url={answer_video}/>}</div>
         </div>
-    </div>
+    </BlockContent>
 }
 
 const FinalBets = ({players, answerer}) => {
@@ -97,50 +86,6 @@ const FinalAnswers = ({players, answerer}) => {
     </div>
 }
 
-const StateContent = ({game}) => {
-    const onSelectQuestion = (questionId) => {
-        JEOPARDY_API.chooseQuestion(questionId);
-    };
-    const onSelectTheme = (themeId) => {
-        JEOPARDY_API.remove_final_theme(themeId);
-    };
-
-    let content = null;
-    if (game.state === "intro") {
-        content = <div className={styles.text}>Intro</div>
-    } else if (game.state === "themes_all") {
-        content = <ThemesGrid game={game}/>
-    } else if (game.state === "round") {
-        content = <div className={styles.text}>{getRoundName(game)}</div>
-    } else if (game.state === "round_themes") {
-        content = <ThemesList game={game}/>
-    } else if (game.state === "final_themes") {
-        content = <ThemesList onSelect={onSelectTheme} game={game} active={true}/>
-    } else if (game.state === "questions") {
-        content = <QuestionsGrid onSelect={onSelectQuestion} game={game}/>
-    } else if (game.state === "question_event") {
-        content = <QuestionEvent question={game.question}/>
-    } else if (["question", "answer", "question_end", "final_question"].includes(game.state)) {
-        content = <Question game={game}/>
-    } else if (game.state === "final_bets") {
-        content = <FinalBets players={game.players}/>
-    } else if (game.state === "final_answer") {
-        content = <div>
-            <Question game={game}/>
-            <FinalAnswers players={game.players}/>
-        </div>
-    } else if (game.state === "final_player_answer") {
-        content = <FinalAnswers players={game.players} answerer={game.answerer}/>
-    } else if (game.state === "final_player_bet") {
-        content = <FinalBets players={game.players} answerer={game.answerer}/>
-    } else if (game.state === "game_end") {
-        content = <div className={styles.text}>Game over</div>
-    }
-    return <div className={styles.stateContent}>
-        {content}
-    </div>
-};
-
 const BalanceControl = ({game}) => {
     const [balances, setBalances] = useState(game.players.map((player) => player.balance));
 
@@ -160,30 +105,12 @@ const BalanceControl = ({game}) => {
         {game.players.map((player, index) => (
             <div key={index}>
                 <div className={styles.name}>{player.name}</div>
-                <input
-                    className={styles.input}
-                    type={"number"}
-                    onChange={(event) => onChange(event, index)}
-                    value={balances[index]}
-                />
+                <Input type={"number"} onChange={(event) => onChange(event, index)} value={balances[index]}/>
             </div>
         ))}
-        {game.players.length > 0 && <div className={css(styles.button, styles.save)} onClick={onSaveClick}>Save</div>}
+        {game.players.length > 0 && <Button className={styles.save} onClick={onSaveClick}>Save</Button>}
     </div>
 };
-
-const RightPanel = ({game}) => (
-    <div className={styles.rightPanel}>
-        <BalanceControl game={game}/>
-    </div>
-)
-
-const Content = ({game}) => {
-    return <div className={styles.content}>
-        <StateContent game={game}/>
-        <RightPanel game={game}/>
-    </div>
-}
 
 const Player = ({balance, name, onClick, selected}) => {
     return <div className={css(styles.button, selected && styles.selected, styles.player)} onClick={onClick}>
@@ -192,89 +119,130 @@ const Player = ({balance, name, onClick, selected}) => {
     </div>
 }
 
-const Footer = ({game}) => {
-    const [answerer, setAnswerer] = useState();
-    const [bet, setBet] = useState();
+const useStateContent = (game) => {
+    const onSelectQuestion = (questionId) => {
+        JEOPARDY_API.chooseQuestion(questionId);
+    };
+    const onSelectTheme = (themeId) => {
+        JEOPARDY_API.remove_final_theme(themeId);
+    };
 
-    useEffect(() => {
-        setAnswerer(game.answerer);
-        setBet(game.question ? game.question.value : 0);
-    }, [game]);
+    switch (game.state) {
+        case "intro": return <TextContent>Intro</TextContent>
+        case "themes_all": return <ThemesGrid game={game}/>
+        case "round": return <TextContent>{getRoundName(game)}</TextContent>
+        case "round_themes": return <ThemesList game={game}/>
+        case "final_themes": return <ThemesList onSelect={onSelectTheme} game={game} active={true}/>
+        case "questions": return <QuestionsGrid onSelect={onSelectQuestion} game={game}/>
+        case "question_event":
+            return <QuestionEvent question={game.question}/>
+        case "question": case "answer": case "question_end": case "final_question":
+            return <Question game={game}/>
+        case "final_bets": return <FinalBets players={game.players}/>
+        case "final_answer":
+            return <BlockContent>
+                <Question game={game}/>
+                <FinalAnswers players={game.players}/>
+            </BlockContent>
+        case "final_player_answer": return <FinalAnswers players={game.players} answerer={game.answerer}/>
+        case "final_player_bet": return <FinalBets players={game.players} answerer={game.answerer}/>
+        case "game_end": return <TextContent>Game over</TextContent>
+        default: return ""
+    }
+};
 
+const useControl = (game, answerer, bet) => {
     const onNextClick = () => JEOPARDY_API.nextState(game.state);
     const onSkipClick = () => JEOPARDY_API.skip_question();
     const onAnswererClick = () => JEOPARDY_API.set_answerer_and_bet(answerer, bet);
     const onAnswerClick = (is_right) => JEOPARDY_API.answer(is_right);
     const onFinalAnswerClick = (is_right) => JEOPARDY_API.final_player_answer(is_right);
-    const onPlayerSelect = (id) => {
-        if (["question_event"].includes(game.state)) setAnswerer(id);
-    };
 
-    let nextButtonContent = [];
-    let betContent = "";
+    const buttons = [];
 
-    if (["questions", "final_themes", "game_end"].includes(game.state)) {
-
-    } else if (["question_event"].includes(game.state)) {
-        nextButtonContent.push(<div className={styles.button} onClick={onSkipClick}>Skip</div>);
+    if (game.state === "question_event") {
+        buttons.push(<Button onClick={onSkipClick}>Skip</Button>);
         if (answerer && bet > 0) {
-            nextButtonContent.push(<div className={styles.button} onClick={onAnswererClick}>Next</div>);
+            buttons.push(<Button onClick={onAnswererClick}>Next</Button>);
         }
-    } else if (["answer"].includes(game.state)) {
-        nextButtonContent.push(<div className={styles.button} onClick={onSkipClick}>Skip</div>);
+    } else if (game.state === "answer") {
+        buttons.push(<Button onClick={onSkipClick}>Skip</Button>);
 
         if (game.answerer) {
-            nextButtonContent.push(<div className={styles.button} onClick={() => onAnswerClick(false)}>Wrong</div>);
-            nextButtonContent.push(<div className={styles.button} onClick={() => onAnswerClick(true)}>Right</div>);
+            buttons.push(<Button onClick={() => onAnswerClick(false)}>Wrong</Button>);
+            buttons.push(<Button onClick={() => onAnswerClick(true)}>Right</Button>);
         }
-    } else if (["final_player_answer"].includes(game.state)) {
-        nextButtonContent.push(<div className={styles.button} onClick={() => onFinalAnswerClick(false)}>Wrong</div>);
-        nextButtonContent.push(<div className={styles.button} onClick={() => onFinalAnswerClick(true)}>Right</div>);
-    } else {
-        nextButtonContent.push(<div className={styles.button} onClick={onNextClick}>Next</div>);
+    } else if (game.state ==="final_player_answer") {
+        buttons.push(<Button onClick={() => onFinalAnswerClick(false)}>Wrong</Button>);
+        buttons.push(<Button onClick={() => onFinalAnswerClick(true)}>Right</Button>);
+    } else if (!["questions", "final_themes", "game_end"].includes(game.state)) {
+        buttons.push(<Button onClick={onNextClick}>Next</Button>);
     }
-
-    if (["question_event"].includes(game.state)) {
-        betContent = <input className={css(styles.input, styles.bet)} type={"number"}
-                            onChange={e => setBet(parseInt(e.target.value))}
-                            value={bet}
-        />
-    }
-
-    return <div className={styles.footer}>
-        <div className={styles.players}>
-            {game.players.map((player, index) =>
-                <Player key={index} balance={player.balance} name={player.name}
-                        onClick={() => onPlayerSelect(player.id)} selected={player.id === answerer}/>
-            )}
-        </div>
-        {betContent}
-        <div className={styles.buttons}>
-            {nextButtonContent.map((c, i) => React.cloneElement(c, {key: i}))}
-        </div>
-    </div>
+    return buttons;
 }
 
 const JeopardyAdmin = () => {
-    const [game, setGame] = useState();
-    const [connected, setConnected] = useState();
+    const game = useGame(JEOPARDY_API);
+    const [connected, setConnected] = useAuth(JEOPARDY_API);
+    const history = useHistory();
 
-    useEffect(() => setConnected(JEOPARDY_API.isConnected()), [])
+    const [answerer, setAnswerer] = useState();
+    const [bet, setBet] = useState();
 
     useEffect(() => {
-        const id = JEOPARDY_API.getGameSubscriber().subscribe(setGame);
-        return () => JEOPARDY_API.getGameSubscriber().unsubscribe(id);
-    }, [])
+        if (game) {
+            setAnswerer(game.answerer);
+            setBet(game.question ? game.question.value : 0);
+        }
+    }, [game]);
 
-    if (!connected) return <AdminAuth setConnected={setConnected}/>;
+    const onSoundStop = () => JEOPARDY_API.intercom("sound_stop");
+    const onLogout = () => {
+        JEOPARDY_API.logout();
+        history.push("/");
+    };
+    const onPlayerSelect = (id) => {
+        if (game.state === "question_event") setAnswerer(id);
+    };
+
+    if (!connected) return <AdminAuth api={JEOPARDY_API} setConnected={setConnected}/>;
     if (!game) return <Loading/>
 
-    return <div className={styles.admin}>
-        <Header game={game}/>
-        <Content game={game}/>
-        <Footer game={game}/>
-        <Toast/>
-    </div>
+    return <GameAdmin>
+        <Header gameName={"Jeopardy"} token={game.token} stateName={getStatusName(game.state)}>
+            <OvalButton onClick={onSoundStop}><i className="fas fa-volume-mute"/></OvalButton>
+            <ButtonLink to={"/"}>Home</ButtonLink>
+            <ButtonLink to={"/jeopardy/view"}>View</ButtonLink>
+            <Button onClick={onLogout}>Logout</Button>
+        </Header>
+        <Content rightPanel={<BalanceControl game={game}/>}>
+            {useStateContent(game)}
+        </Content>
+        <Footer>
+            <FooterItem>
+                <List className={styles.players}>
+                    {game.players.map((player, index) => (
+                        <ListItem
+                            key={index} className={css(
+                                game.state === "question_event" && styles.active,
+                                styles.player, player.id === answerer && styles.selected)}
+                            onClick={() => onPlayerSelect(player.id)}
+                        >
+                            <div>{player.balance}</div>
+                            <div>{player.name}</div>
+                        </ListItem>
+                    ))}
+                </List>
+                {game.state === "question_event" && <Input
+                    className={css(styles.bet)} type={"number"}
+                    onChange={e => setBet(parseInt(e.target.value))} value={bet}/>
+                }
+            </FooterItem>
+            <FooterItem>
+                {useControl(game, answerer, bet)}
+            </FooterItem>
+        </Footer>
+    </GameAdmin>
 }
 
 export default JeopardyAdmin;

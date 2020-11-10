@@ -75,84 +75,100 @@ const Whirligig = ({game, callback}) => {
         stage.add(layer);
         layer.draw();
 
-        const onResize = () => {
-            rect = content.getBoundingClientRect();
-        }
+        stage.size({width: rect.width, height: rect.height});
+
+        const screen = Math.min(stage.width(), stage.height());
+        const radius = screen / 2 - screen * 0.065;
+        const centerX = stage.width() / 2;
+        const centerY = stage.height() / 2;
+
+        circle.x(centerX);
+        circle.y(centerY);
+        circle.radius(radius);
+        circle.listening(false);
+
+
+        top.x(centerX);
+        top.y(centerY);
+        top.radius(radius * 0.1);
+        top.listening(false);
+
+        bars.forEach((b, index) => {
+            const angle = sectorAngle * index;
+            b.points([
+                centerX, centerY,
+                centerX + radius * Math.sin(Math.PI + angle), centerY + radius * Math.cos(Math.PI + angle)
+            ])
+            b.listening(false);
+        });
+
+        items.forEach((i, index) => {
+            const angle = sectorAngle / 2 + sectorAngle * index;
+
+            i.position({
+                x: centerX + radius * 0.85 * Math.sin(angle),
+                y: centerY - radius * 0.85 * Math.cos(angle)
+            })
+
+            const feelsBadMan = sectorAngle * radius * 0.85 * 0.8;
+            i.width(feelsBadMan)
+            i.fontSize(screen * 0.04)
+            i.rotation(angle * 180 / Math.PI);
+            i.offsetX(i.width() / 2);
+            i.offsetY(i.height() / 2);
+            i.listening(false);
+        });
+
+        arrows.forEach((i, index) => {
+            const angle = sectorAngle / 2 + sectorAngle * index;
+
+            i.strokeWidth(screen * 0.01)
+            const halfOfArrowMagicNumber = screen * 0.05
+            i.points([
+                centerX + radius * 0.85 * Math.sin(angle) - halfOfArrowMagicNumber * Math.cos(angle),
+                centerY + radius * 0.85 * Math.cos(angle + Math.PI) + halfOfArrowMagicNumber * Math.sin(angle + Math.PI),
+                centerX + radius * 0.85 * Math.sin(angle) + halfOfArrowMagicNumber * Math.cos(angle),
+                centerY + radius * 0.85 * Math.cos(angle + Math.PI) - halfOfArrowMagicNumber * Math.sin(angle + Math.PI),
+            ])
+            i.listening(false);
+        });
 
         let whirligigAngle = 0;
 
         const t = Math.randomRange(30, 43);
         const reqAngle = sectorAngle * game.cur_random_item_idx + Math.random() * sectorAngle;
-        const S = Math.abs(Math.angleNormalize(whirligigAngle) - reqAngle) + Math.randomRangeInt(35, 50) * 2 * Math.PI;
+        let numberOfLaps = Math.randomRangeInt(35, 50);
+        let S = Math.abs(Math.angleNormalize(whirligigAngle) - reqAngle) + numberOfLaps * 2 * Math.PI;
         const v0 = S / (t - t/2);
         const a = -v0/t;
 
         let vi = v0;
+        let ti = 0.0;
+
+        //whirligigAngle = reqAngle;
 
         const onUpdate = (delta) => {
-            stage.size({width: rect.width, height: rect.height});
+            ti += delta;
 
-            const screen = Math.min(stage.width(), stage.height());
-            const radius = screen / 2 - screen * 0.065;
-            const centerX = stage.width() / 2;
-            const centerY = stage.height() / 2;
-
-            vi = vi > 0 ? vi + a * delta : 0;
+            const prevWhirligigAngle = whirligigAngle
             whirligigAngle = Math.angleNormalize(whirligigAngle + vi * delta);
+            if (prevWhirligigAngle > whirligigAngle) {
+                numberOfLaps -= 1;
+            }
+
+            S = Math.abs(Math.angleNormalize(whirligigAngle) - reqAngle) + numberOfLaps * 2 * Math.PI;
+            vi = S / ((t - ti) - (t - ti)/2);
+
             if (vi <= 0) {
                 callback();
                 anim.stop();
             }
 
-            circle.x(centerX);
-            circle.y(centerY);
-            circle.radius(radius);
-
-            top.x(centerX);
-            top.y(centerY);
-            top.radius(radius * 0.1);
-
-            bars.forEach((b, index) => {
-                const angle = sectorAngle * index;
-                b.points([
-                    centerX, centerY,
-                    centerX + radius * Math.sin(Math.PI + angle), centerY + radius * Math.cos(Math.PI + angle)
-                ])
-            });
-
-            items.forEach((i, index) => {
-                const angle = sectorAngle / 2 + sectorAngle * index;
-
-                i.position({
-                    x: centerX + radius * 0.85 * Math.sin(angle),
-                    y: centerY - radius * 0.85 * Math.cos(angle)
-                })
-
-                const feelsBadMan = sectorAngle * radius * 0.85 * 0.8;
-                i.width(feelsBadMan)
-                i.fontSize(screen * 0.04)
-                i.rotation(angle * 180 / Math.PI);
-                i.offsetX(i.width() / 2);
-                i.offsetY(i.height() / 2);
-            });
-
-            arrows.forEach((i, index) => {
-                const angle = sectorAngle / 2 + sectorAngle * index;
-
-                i.strokeWidth(screen * 0.01)
-                const halfOfArrowMagicNumber = screen * 0.05
-                i.points([
-                    centerX + radius * 0.85 * Math.sin(angle) - halfOfArrowMagicNumber * Math.cos(angle),
-                    centerY + radius * 0.85 * Math.cos(angle + Math.PI) + halfOfArrowMagicNumber * Math.sin(angle + Math.PI),
-                    centerX + radius * 0.85 * Math.sin(angle) + halfOfArrowMagicNumber * Math.cos(angle),
-                    centerY + radius * 0.85 * Math.cos(angle + Math.PI) - halfOfArrowMagicNumber * Math.sin(angle + Math.PI),
-                ])
-            });
-
             arrow.points([
-                centerX - radius * Math.sin(whirligigAngle) * 0.2, centerY + radius * Math.cos(whirligigAngle) * 0.2,
-                centerX + radius * Math.sin(whirligigAngle) * 0.8, centerY - radius * Math.cos(whirligigAngle) * 0.8,
+                centerX - radius * Math.sin(whirligigAngle) * 0.2, centerY - radius * Math.cos(whirligigAngle + Math.PI) * 0.2,
+                centerX + radius * Math.sin(whirligigAngle) * 0.8, centerY + radius * Math.cos(whirligigAngle + Math.PI) * 0.8,
             ])
+            //anim.stop();
         }
 
         const anim = new Konva.Animation((frame) => {
@@ -162,11 +178,8 @@ const Whirligig = ({game, callback}) => {
 
         anim.start();
 
-        window.addEventListener('resize', onResize);
-
         return () => {
             anim.stop();
-            window.removeEventListener('resize', onResize);
         }
     }, [])
 

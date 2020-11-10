@@ -1,7 +1,7 @@
 import React from "react";
 import {useHistory} from "react-router-dom";
 
-import {useGame, useAuth, Loading, Button, ButtonLink, List, ListItem, useTimer} from "common/Essentials"
+import {useGame, useAuth, Loading, Button, ButtonLink, List, ListItem, useTimer, OvalButton} from "common/Essentials"
 import {BlockContent, Content, Footer, FooterItem, GameAdmin, Header, TextContent} from "common/Admin";
 import {AdminAuth} from "common/Auth";
 
@@ -131,7 +131,7 @@ const WeakestAdmin = () => {
 
     return <GameAdmin>
         <Header gameName={"The Weakest"} token={game.token} stateName={getStatusName(game.state)}>
-            <Button onClick={onSoundStop}><i className="fas fa-volume-mute"/></Button>
+            <OvalButton onClick={onSoundStop}><i className="fas fa-volume-mute"/></OvalButton>
             <ButtonLink to={"/"}>Home</ButtonLink>
             <ButtonLink to={"/weakest/view"}>View</ButtonLink>
             <Button onClick={onLogout}>Logout</Button>

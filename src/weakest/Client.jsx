@@ -48,19 +48,12 @@ const useStateContent = (game) => {
 };
 
 const WeakestClient = () => {
-    const game = useGame(WEAKEST_API, (game) => {}, (message) => {});
+    const game = useGame(WEAKEST_API);
     const [connected, setConnected] = useAuth(WEAKEST_API);
     const history = useHistory();
 
     if (!connected) return <PlayerAuth api={WEAKEST_API} setConnected={setConnected}/>;
     if (!game) return <Loading/>;
-/*
-    if (!game.players.find(p => p === WEAKEST_API.playerId)) {
-        WEAKEST_API.savePlayerId(null);
-        if (WEAKEST_API.isConnected()) WEAKEST_API.socket.close();
-        setConnected(false);
-    }
-*/
 
     const onLogout = () => {
         WEAKEST_API.logout();

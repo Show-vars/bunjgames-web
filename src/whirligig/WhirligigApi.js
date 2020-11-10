@@ -33,7 +33,7 @@ export default class WhirligigApi extends GameApi {
         } else {
             time = Math.round((serverTime - now) / 1000);
         }
-        return Math.clamp(time,60,0);
+        return time;
     }
 
     score(connoisseurs_score, viewers_score) {

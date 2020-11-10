@@ -1,9 +1,12 @@
 import React, {useEffect, useState} from "react";
 import {useHistory} from "react-router-dom";
-import {HowlWrapper, Loading, Toast} from "common/Essentials";
-import styles from "./Client.scss";
-import {PlayerAuth} from "./Auth.jsx";
-import {Howl} from "howler";
+
+import {HowlWrapper, Loading, Toast, useAuth, useGame} from "common/Essentials";
+import {PlayerAuth} from "common/Auth";
+
+import styles from "jeopardy/Client.scss";
+import {ExitButton, Header} from "common/Client";
+
 
 const Sounds = {
     do_bet: HowlWrapper('/sounds/jeopardy/do_bet.mp3'),
@@ -12,19 +15,6 @@ const Sounds = {
 
 const loadSounds = () => {
     Object.values(Sounds).forEach(m => m.load());
-}
-
-const Header = () => {
-    const history = useHistory();
-
-    const onLogout = () => {
-        JEOPARDY_API.logout();
-        history.push("/");
-    };
-
-    return <div className={styles.header}>
-        <a className={styles.exit} onClick={onLogout}><i className="fas fa-times-circle"/></a>
-    </div>
 }
 
 const FinalBet = () => {
@@ -89,43 +79,35 @@ const Player = ({player, selected, self}) => {
 
 const Players = ({game}) => {
     return <div className={styles.players}>
-        {game.players.map((player, index) =>
+        {game.players.map((player) =>
             <Player key={player.id} player={player} selected={player.id === game.answerer} self={player.id === JEOPARDY_API.playerId}/>
         )}
     </div>
 }
 
 const JeopardyClient = () => {
-    const [game, setGame] = useState();
-    const [connected, setConnected] = useState();
-
-    const triggerIntercom = (message) => {
+    const game = useGame(JEOPARDY_API, (game) => {}, (message) => {
         if(message === "do_bet:" + JEOPARDY_API.playerId) {
             Sounds.do_bet.play();
         } else if(message === "do_answer:" + JEOPARDY_API.playerId) {
             Sounds.schnelle.play();
         }
-    };
-
-    useEffect(() => setConnected(JEOPARDY_API.isConnected()), [])
-
-    useEffect(() => {
-        const gameId = JEOPARDY_API.getGameSubscriber().subscribe(setGame);
-        const intercomId = JEOPARDY_API.getIntercomSubscriber().subscribe(triggerIntercom);
-
-        return () => {
-            JEOPARDY_API.getGameSubscriber().unsubscribe(gameId);
-            JEOPARDY_API.getIntercomSubscriber().unsubscribe(intercomId);
-        }
-    }, []);
+    });
+    const [connected, setConnected] = useAuth(JEOPARDY_API);
+    const history = useHistory();
 
     useEffect(loadSounds, []);
 
-    if (!connected) return <PlayerAuth setConnected={setConnected}/>;
-    if (!game) return <Loading/>
+    if (!connected) return <PlayerAuth api={JEOPARDY_API} setConnected={setConnected}/>;
+    if (!game) return <Loading/>;
+
+    const onLogout = () => {
+        WEAKEST_API.logout();
+        history.push("/");
+    };
 
     return <div className={styles.client}>
-        <Header />
+        <Header><ExitButton onClick={onLogout}/></Header>
         <Content game={game}/>
         <Players game={game}/>
         <Toast/>

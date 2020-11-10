@@ -42,7 +42,7 @@ const Toast = () => (
         rtl={false}
         pauseOnFocusLoss
         draggable
-        pauseOnHover
+        pauseOnHover400px
     />
 )
 
@@ -50,9 +50,17 @@ const Button = ({onClick, className, children}) => (
     <div className={css(styles.button, className)} onClick={onClick}>{children}</div>
 );
 
+const OvalButton = ({onClick, className, children}) => (
+    <div className={css(styles.oval, styles.button, className)} onClick={onClick}>{children}</div>
+);
+
 const ButtonLink = ({to, className, children}) => (
     <Link className={css(styles.button, className)} to={to}>{children}</Link>
 );
+
+const Input = ({type, onChange, value, className}) => (
+    <input className={css(className, styles.input)} type={type} onChange={onChange} value={value}/>
+)
 
 const List = ({className, children}) => (
     <div className={css(styles.list, className)}>
@@ -66,7 +74,7 @@ const ListItem = ({className, children, ...props}) => (
     </div>
 );
 
-const useGame = (api, onState, onIntercom) => {
+const useGame = (api, onState=() => {}, onIntercom=() => {}) => {
     const [game, setGame] = useState();
 
     useEffect(() => {
@@ -112,7 +120,8 @@ export {
     HowlWrapper,
     ImagePlayer, AudioPlayer, VideoPlayer,
     Loading, Toast,
-    Button, ButtonLink,
+    Button, OvalButton, ButtonLink,
+    Input,
     List, ListItem,
     useGame, useAuth, useTimer
 }

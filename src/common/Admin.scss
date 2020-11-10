@@ -10,6 +10,7 @@
 .header {
   height: 80px;
   background-color: $baseBackgroundDark;
+  color: $baseTextColor;
 
   display: flex;
   justify-content: space-between;
@@ -18,17 +19,15 @@
   padding: 0 40px;
 
   .logo {
-    color: white;
+    font-size: 30px;
   }
 
   .token {
     font-size: 30px;
-    color: white;
   }
 
   .state {
     font-size: 30px;
-    color: white;
     text-align: center;
   }
 
@@ -45,13 +44,12 @@
 .content {
   flex-grow: 1;
   align-items: stretch;
+  color: $baseTextColor;
 
   display: flex;
   height: 0;
 
   .stateContent {
-    color: $baseTextColor;
-
     overflow-y: scroll;
     scrollbar-width: none;
     flex-grow: 1;
@@ -94,6 +92,7 @@
   align-items: center;
   justify-content: space-between;
   background-color: $baseBackgroundDark;
+  color: $baseTextColor;
   height: 160px;
   padding: 0 40px;
   width: 100%;
@@ -102,8 +101,12 @@
 .footerItem {
   display: flex;
   flex-direction: row;
+
   * {
     font-size: 50px;
+  }
+
+  >*:not(:first-child) {
     margin: 0 0 0 40px;
   }
 }

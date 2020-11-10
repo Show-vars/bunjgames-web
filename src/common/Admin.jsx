@@ -1,6 +1,6 @@
 import React from "react";
-import styles from "./Admin.scss";
-import {Toast} from "./Essentials.jsx";
+import styles from "common/Admin.scss";
+import {Toast} from "common/Essentials";
 
 const Header = ({gameName, token, stateName, children}) => {
     return <div className={styles.header}>
@@ -38,8 +38,8 @@ const Content = ({rightPanel, children}) => {
     </div>
 }
 
-const FooterItem = ({children}) => (
-    <div className={styles.footerItem}>
+const FooterItem = ({className, children}) => (
+    <div className={css(styles.footerItem, className)}>
         {children}
     </div>
 );
@@ -58,7 +58,6 @@ const GameAdmin = ({children}) => {
 }
 
 export {
-    // Components
     GameAdmin,
     Header,
     Content,

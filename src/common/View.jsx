@@ -1,9 +1,10 @@
 import React from "react";
 import styles from "common/View.scss";
+import {Toast} from "common/Essentials";
 
 
-const TextContent = ({children}) => (
-    <div className={styles.text}>
+const TextContent = ({className, children}) => (
+    <div className={css(styles.text, className)}>
         <p>{children}</p>
     </div>
 );
@@ -23,6 +24,7 @@ const Content = ({children}) => (
 const GameView = ({children}) => (
     <div className={styles.view}>
         {children}
+        <Toast/>
     </div>
 );
 
