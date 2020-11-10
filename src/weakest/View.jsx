@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Loading, useGame, useAuth, useTimer, HowlWrapper, Button} from "common/Essentials";
+import {Loading, useGame, useAuth, useTimer, HowlWrapper} from "common/Essentials";
 import {AdminAuth} from "common/Auth";
 import {Content, GameView, TextContent, BlockContent} from "common/View";
 
