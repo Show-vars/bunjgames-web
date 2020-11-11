@@ -136,8 +136,8 @@ const Whirligig = ({game, callback}) => {
         let whirligigAngle = 0;
 
         const t = Math.randomRange(30, 43);
-        const reqAngle = sectorAngle * game.cur_random_item_idx + Math.random() * sectorAngle;
-        let numberOfLaps = Math.randomRangeInt(35, 50);
+        const reqAngle = sectorAngle * game.cur_random_item_idx + Math.random() * 0.98 * sectorAngle;
+        let numberOfLaps = Math.randomRangeInt(25, 35);
         let S = Math.abs(Math.angleNormalize(whirligigAngle) - reqAngle) + numberOfLaps * 2 * Math.PI;
         const v0 = S / (t - t/2);
         const a = -v0/t;
@@ -147,37 +147,36 @@ const Whirligig = ({game, callback}) => {
 
         //whirligigAngle = reqAngle;
 
-        const onUpdate = (delta) => {
-            ti += delta;
-
-            const prevWhirligigAngle = whirligigAngle
-            whirligigAngle = Math.angleNormalize(whirligigAngle + vi * delta);
-            if (prevWhirligigAngle > whirligigAngle) {
-                numberOfLaps -= 1;
-            }
-
-            S = Math.abs(Math.angleNormalize(whirligigAngle) - reqAngle) + numberOfLaps * 2 * Math.PI;
-            vi = S / ((t - ti) - (t - ti)/2);
-
-            if (vi <= 0) {
-                callback();
-                anim.stop();
-            }
-
+        const setAngle = (whirligigAngle) => {
             arrow.points([
                 centerX - radius * Math.sin(whirligigAngle) * 0.2, centerY - radius * Math.cos(whirligigAngle + Math.PI) * 0.2,
                 centerX + radius * Math.sin(whirligigAngle) * 0.8, centerY + radius * Math.cos(whirligigAngle + Math.PI) * 0.8,
             ])
+        }
+        const onUpdate = (delta) => {
+            ti += delta;
+
+            const prevWhirligigAngle = whirligigAngle;
+            whirligigAngle = Math.angleNormalize(whirligigAngle + vi * delta);
+            vi = v0 + a * ti;
+            if (prevWhirligigAngle > whirligigAngle) {
+                numberOfLaps -= 1;
+            }
+
+            if (vi <= 0 || numberOfLaps === 0 && whirligigAngle > reqAngle) {
+                callback();
+                anim.stop();
+            }
+
+            setAngle(whirligigAngle);
             //anim.stop();
         }
 
         const anim = new Konva.Animation((frame) => {
-            const delta = frame.timeDiff / 1000;
-            onUpdate(delta);
+            onUpdate(frame.timeDiff / 1000);
         }, layer);
 
         anim.start();
-
         return () => {
             anim.stop();
         }

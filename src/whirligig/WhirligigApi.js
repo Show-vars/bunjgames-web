@@ -51,4 +51,8 @@ export default class WhirligigApi extends GameApi {
     nextState(fromState=null) {
         this.execute("next_state", {"from_state": fromState})
     }
+
+    extra_time() {
+        this.execute("extra_time", {})
+    }
 }

@@ -28,10 +28,10 @@ const Music = {
 }
 
 const Sounds = {
-    sig1: HowlWrapper('/sounds/whirligig/sig1.mp3'),
-    sig2: HowlWrapper('/sounds/whirligig/sig2.mp3'),
-    sig3: HowlWrapper('/sounds/whirligig/sig3.mp3'),
-    gong: HowlWrapper('/sounds/whirligig/gong.mp3'),
+    sig1: HowlWrapper('/sounds/whirligig/sig1.ogg'),
+    sig2: HowlWrapper('/sounds/whirligig/sig2.ogg'),
+    sig3: HowlWrapper('/sounds/whirligig/sig3.ogg'),
+    gong: HowlWrapper('/sounds/whirligig/gong.ogg'),
 }
 
 const loadSounds = () => {
@@ -47,7 +47,7 @@ const resetSounds = () => {
 
 const isQuestionAvailable = (game) => {
     const {cur_question} = game;
-    return ["question_start", "question_discussion", "answer", "extra_minute", "club_help"].includes(game.state)
+    return ["question_start", "question_discussion", "answer"].includes(game.state)
         && ["text", "image", "audio", "video"].some(v => cur_question[v]);
 }
 
@@ -75,7 +75,7 @@ const QuestionMessage = ({game, text, image, audio, video}) => {
 const triggerTimerSound = (game, time) => {
     if (!game.cur_item) return;
 
-    if (game.state === "extra_minute" || game.state !== "club_help" && game.cur_item.type === "standard") {
+    if (game.cur_item.type === "standard") {
         switch (time) {
             case 60:
                 Sounds.sig1.play();

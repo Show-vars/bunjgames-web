@@ -33,10 +33,6 @@ const getStatusName = (status) => {
             return "Discussion";
         case 'answer':
             return "Answer";
-        case 'extra_minute':
-            return "Extra minute";
-        case 'club_help':
-            return "Club help";
         case 'right_answer':
             return "Right answer";
         case 'question_end':
@@ -94,7 +90,7 @@ const Items = ({items}) => (
 
 const Timer = ({game}) => {
     const time = useTimer(WHIRLIGIG_API, () => {
-        if (["question_discussion", "extra_minute", "club_help"].includes(game.state)) {
+        if (game.state === "question_discussion") {
             WHIRLIGIG_API.nextState(game.state);
         }
     });
@@ -177,11 +173,14 @@ const useControl = (game) => {
     const onGongClick = () => WHIRLIGIG_API.intercom("gong");
     const onAnswerClick = (isCorrect) => WHIRLIGIG_API.answerCorrect(isCorrect);
     const onNextClick = () => WHIRLIGIG_API.nextState(game.state);
+    const onExtraTime = () => WHIRLIGIG_API.extra_time();
 
     const buttons = [];
 
-    if (["question_discussion", "extra_minute", "club_help"].includes(game.state)) {
+    if (game.state === "question_discussion") {
         buttons.push(<Timer game={game}/>)
+    } else if (game.state === "answer") {
+        buttons.push(<Button onClick={onExtraTime}>+time</Button>);
     }
 
     buttons.push(<Button className={styles.gong} onClick={() => onGongClick()}>Gong</Button>)
