@@ -7,18 +7,15 @@
 }
 
 .header {
-  display: flex;
   position: absolute;
-  width: 100%;
+  top: 10px;
 
   @media (orientation: landscape) {
-    flex-direction: column;
-    justify-content: flex-start;
   }
 
   @media (orientation: portrait) {
-    flex-direction: row;
-    justify-content: flex-end;
+    float:right;
+    right: 0;
   }
 }
 
@@ -70,6 +67,9 @@
   width: 100%;
   background-color: $baseBackground;
   color: $baseTextColor;
+
+  overflow-y: auto;
+  min-height: 100px;
 
   display: flex;
   @media (orientation: landscape) {

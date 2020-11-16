@@ -102,7 +102,7 @@ const JeopardyClient = () => {
     if (!game) return <Loading/>;
 
     const onLogout = () => {
-        WEAKEST_API.logout();
+        JEOPARDY_API.logout();
         history.push("/");
     };
 

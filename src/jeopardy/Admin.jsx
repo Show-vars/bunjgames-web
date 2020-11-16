@@ -10,7 +10,7 @@ import {
     useGame,
     useAuth,
     OvalButton,
-    ButtonLink, Button, Input, List, ListItem
+    ButtonLink, Button, Input, HorizontalList, TwoLineListItem
 } from "common/Essentials"
 import {BlockContent, Content, Footer, FooterItem, GameAdmin, Header, TextContent} from "common/Admin";
 
@@ -220,19 +220,19 @@ const JeopardyAdmin = () => {
         </Content>
         <Footer>
             <FooterItem>
-                <List className={styles.players}>
+                <HorizontalList>
                     {game.players.map((player, index) => (
-                        <ListItem
+                        <TwoLineListItem
                             key={index} className={css(
                                 game.state === "question_event" && styles.active,
                                 styles.player, player.id === answerer && styles.selected)}
                             onClick={() => onPlayerSelect(player.id)}
                         >
-                            <div>{player.balance}</div>
+                            <div>{player.balance}54645</div>
                             <div>{player.name}</div>
-                        </ListItem>
+                        </TwoLineListItem>
                     ))}
-                </List>
+                </HorizontalList>
                 {game.state === "question_event" && <Input
                     className={css(styles.bet)} type={"number"}
                     onChange={e => setBet(parseInt(e.target.value))} value={bet}/>

@@ -70,6 +70,7 @@
       align-items: center;
       flex-basis: 0;
       font-size: 16px;
+      min-height: 50px;
 
       @media (orientation: landscape) {
         max-width: 25vw;

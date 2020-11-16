@@ -62,14 +62,26 @@ const Input = ({type, onChange, value, className}) => (
     <input className={css(className, styles.input)} type={type} onChange={onChange} value={value}/>
 )
 
-const List = ({className, children}) => (
-    <div className={css(styles.list, className)}>
+const VerticalList = ({className, children}) => (
+    <div className={css(styles.verticalList, styles.list, className)}>
+        {children}
+    </div>
+);
+
+const HorizontalList = ({className, children}) => (
+    <div className={css(styles.horizontalList, styles.list, className)}>
         {children}
     </div>
 );
 
 const ListItem = ({className, children, ...props}) => (
     <div className={css(styles.listItem, className)} {...props}>
+        {children}
+    </div>
+);
+
+const TwoLineListItem = ({className, children, ...props}) => (
+    <div className={css(styles.twoLineListItem, styles.listItem, className)} {...props}>
         {children}
     </div>
 );
@@ -122,6 +134,6 @@ export {
     Loading, Toast,
     Button, OvalButton, ButtonLink,
     Input,
-    List, ListItem,
+    VerticalList, HorizontalList, ListItem, TwoLineListItem,
     useGame, useAuth, useTimer
 }

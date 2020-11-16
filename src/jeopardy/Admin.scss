@@ -29,21 +29,9 @@
   font-size: 40px;
 }
 
-.players {
-  flex-direction: row;
-
-  :not(:last-child) {
-    margin-bottom: 0;
-  }
-}
-
 .player {
-  overflow: visible;
-  background-color: $baseBackgroundButton;
-  margin: 0 10px;
-
+  background-color: $baseBackgroundButton !important;
   min-width: 150px;
-  min-height: 80px;
 
   &.selected {
     background-color: $baseBackgroundSelect !important;

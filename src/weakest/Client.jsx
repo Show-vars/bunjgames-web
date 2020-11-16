@@ -1,7 +1,7 @@
 import React from "react";
 import {useHistory} from "react-router-dom";
 
-import {List, ListItem, Loading, useAuth, useGame} from "common/Essentials";
+import {VerticalList, ListItem, Loading, useAuth, useGame} from "common/Essentials";
 import {PlayerAuth} from "common/Auth";
 import {GameClient, Content, Header, ExitButton, TextContent, BigButtonContent} from "common/Client";
 
@@ -9,7 +9,7 @@ import styles from "weakest/Client.scss";
 
 
 const Players = ({game, player, onClick}) => {
-    return <List className={styles.players}>
+    return <VerticalList className={styles.players}>
         {game.players.filter(p => !p.is_weak).map(p =>
             <ListItem
                 key={p.id}
@@ -24,7 +24,7 @@ const Players = ({game, player, onClick}) => {
                 {p.name}
             </ListItem>
         )}
-    </List>
+    </VerticalList>
 }
 
 

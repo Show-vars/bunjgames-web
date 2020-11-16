@@ -1,7 +1,18 @@
 import React from "react";
 import {useHistory} from "react-router-dom";
 
-import {useGame, useAuth, Loading, Button, ButtonLink, List, ListItem, useTimer, OvalButton} from "common/Essentials"
+import {
+    useGame,
+    useAuth,
+    Loading,
+    Button,
+    ButtonLink,
+    VerticalList,
+    ListItem,
+    useTimer,
+    OvalButton,
+    TwoLineListItem
+} from "common/Essentials"
 import {BlockContent, Content, Footer, FooterItem, GameAdmin, Header, TextContent} from "common/Admin";
 import {AdminAuth} from "common/Auth";
 
@@ -38,19 +49,19 @@ const WeakestContent = ({game}) => {
         {game.state === "weakest_reveal" && <TextContent>Weakest reveal</TextContent>}
         <div>{"Weakest: "}{weakest.name}</div>
         <div>{"Strongest: "}{strongest.name}</div>
-        <List className={styles.players}>
+        <VerticalList className={styles.players}>
             {game.players.filter(player => !player.is_weak).map(player =>
-                <ListItem key={player.id} className={styles.player}>
+                <TwoLineListItem key={player.id} className={styles.player}>
                     <div>{player.weak ? game.players.find(p => p.id === player.weak).name : "⸻"}</div>
                     <div>{player.name}</div>
-                </ListItem>
+                </TwoLineListItem>
             )}
-        </List>
+        </VerticalList>
     </BlockContent>
 }
 
 const Players = ({game}) => {
-    return <List className={styles.players}>
+    return <VerticalList className={styles.players}>
         {game.players.map(player =>
             <ListItem key={player.id} className={css(
                 styles.player,
@@ -60,7 +71,7 @@ const Players = ({game}) => {
                 {player.name}
             </ListItem>
         )}
-    </List>
+    </VerticalList>
 };
 
 const useStateContent = (game) => {

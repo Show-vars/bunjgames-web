@@ -74,9 +74,21 @@
   display: flex;
   justify-content: space-around;
   flex-direction: column;
+}
 
-  :not(:last-child) {
+.verticalList {
+  flex-direction: column;
+
+  >:not(:last-child) {
     margin-bottom: 8px;
+  }
+}
+
+.horizontalList {
+  flex-direction: row;
+
+  >:not(:last-child) {
+    margin-right: 10px;
   }
 }
 
@@ -87,17 +99,15 @@
   background-color: $baseBackgroundDark;
   font-size: 24px;
   font-weight: bold;
-  padding: 8px;
+  padding: 10px;
 
-  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
+.twoLineListItem {
+  padding: 14px;
   >div {
     white-space: nowrap;
     overflow: hidden;

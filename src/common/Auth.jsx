@@ -106,7 +106,7 @@ const RegisterPlayerForm = ({api, setConnected}) => {
     };
 
     return <AuthForm  title={"Register player"}>
-        <input type="text" placeholder={"name"} value={name} onChange={e => setName(e.target.value)} disabled={loading}/>
+        <input type="text" maxLength={20} placeholder={"name"} value={name} onChange={e => setName(e.target.value)} disabled={loading}/>
         <input type="text" placeholder={"token"} value={token} onChange={e => setToken(e.target.value)} disabled={loading}/>
         <div className={[styles.button, loading && styles.loadingButton ].join(' ')} onClick={onSubmit}>Register</div>
     </AuthForm>
