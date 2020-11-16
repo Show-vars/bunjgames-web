@@ -57,7 +57,7 @@ const Content = ({game}) => {
     }
 
     if(["question", "answer"].includes(game.state)) {
-        content = <div className={css(styles.playerButton,  buttonActive && styles.active)} onClick={onButton}/>
+        content = <div className={css(styles.playerButton,  buttonActive && styles.active)} onClick={onButton} onTouchStart={onButton}/>
     } else if(["final_bets"].includes(game.state) && player.final_bet === 0) {
         content = <FinalBet />
     } else if (["final_answer"].includes(game.state) && !player.final_answer) {

@@ -23,7 +23,7 @@ const FormContent = ({children}) => (
 )
 
 const BigButtonContent = ({active, onClick, children}) => (
-    <div className={css(styles.bigButton, active && styles.active)} onClick={onClick}>
+    <div className={css(styles.bigButton, active && styles.active)} onClick={onClick} onTouchStart={onClick}>
         {children}
     </div>
 )
