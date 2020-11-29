@@ -133,19 +133,13 @@ const Whirligig = ({game, callback}) => {
             i.listening(false);
         });
 
-        let whirligigAngle = 0;
-
         const t = Math.randomRange(30, 43);
         const reqAngle = sectorAngle * game.cur_random_item_idx + Math.random() * 0.98 * sectorAngle;
-        let numberOfLaps = Math.randomRangeInt(25, 35);
-        let S = Math.abs(Math.angleNormalize(whirligigAngle) - reqAngle) + numberOfLaps * 2 * Math.PI;
-        const v0 = S / (t - t/2);
-        const a = -v0/t;
-
-        let vi = v0;
+        let numberOfLaps = Math.randomRangeInt(30, 45);
+        let S = numberOfLaps * 2 * Math.PI + reqAngle;
+        const v0 = S / (t - t / 2);
+        const a = 2.0 * (S - v0 * t) / Math.pow(t, 2);
         let ti = 0.0;
-
-        //whirligigAngle = reqAngle;
 
         const setAngle = (whirligigAngle) => {
             arrow.points([
@@ -156,20 +150,15 @@ const Whirligig = ({game, callback}) => {
         const onUpdate = (delta) => {
             ti += delta;
 
-            const prevWhirligigAngle = whirligigAngle;
-            whirligigAngle = Math.angleNormalize(whirligigAngle + vi * delta);
-            vi = v0 + a * ti;
-            if (prevWhirligigAngle > whirligigAngle) {
-                numberOfLaps -= 1;
-            }
-
-            if (vi <= 0 || numberOfLaps === 0 && whirligigAngle > reqAngle) {
+            if (ti >= t) {
+                setAngle(reqAngle);
                 callback();
                 anim.stop();
+            } else {
+                setAngle(Math.angleNormalize(
+                    v0 * ti + (a * Math.pow(ti, 2)) / 2.0
+                ));
             }
-
-            setAngle(whirligigAngle);
-            //anim.stop();
         }
 
         const anim = new Konva.Animation((frame) => {
