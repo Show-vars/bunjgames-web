@@ -1,11 +1,24 @@
 @import "src/Colors";
 
 .players {
-  margin: 12px 12px;
+  padding: 12px 12px;
+
+  overflow-y: scroll;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  flex: 0 1 auto;
+  min-height: 0;
 }
 
 .player {
   background-color: $baseBackgroundButton;
+
+  font-size: 22px;
+  margin-bottom: 5px;
+  padding: 5px;
 
   &.selected {
     background-color: $baseBackgroundSelect !important;
@@ -15,4 +28,34 @@
   &.weak {
     color: $baseTextColorGray;
   }
+}
+
+.scores {
+  border-top: 10px solid #333435;
+  padding: 12px 12px;
+  align-items: center;
+}
+
+.score {
+  background-color: $baseBackgroundButton;
+  font-size: 18px;
+  margin-bottom: 5px;
+  padding: 5px;
+  min-width: 150px;
+
+  &.selected {
+    background-color: $baseBackgroundSelect !important;
+    color: $baseTextColorSelect;
+  }
+}
+
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.gameScore {
+  font-size: 60px;
+  font-weight: bold;
 }

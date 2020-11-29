@@ -204,7 +204,7 @@ const WhirligigAdmin = () => {
     const onSoundStop = () => WHIRLIGIG_API.intercom("sound_stop");
     const onLogout = () => {
         WHIRLIGIG_API.logout();
-        history.push("/");
+        history.push("/admin");
     };
 
     if (!connected) return <AdminAuth api={WHIRLIGIG_API} setConnected={setConnected}/>;
@@ -213,7 +213,7 @@ const WhirligigAdmin = () => {
     return <GameAdmin>
         <Header gameName={"Whirligig"} token={game.token} stateName={getStatusName(game.state)}>
             <OvalButton onClick={onSoundStop}><i className="fas fa-volume-mute"/></OvalButton>
-            <ButtonLink to={"/"}>Home</ButtonLink>
+            <ButtonLink to={"/admin"}>Home</ButtonLink>
             <ButtonLink to={"/whirligig/view"}>View</ButtonLink>
             <Button onClick={onLogout}>Logout</Button>
         </Header>

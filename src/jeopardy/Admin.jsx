@@ -199,7 +199,7 @@ const JeopardyAdmin = () => {
     const onSoundStop = () => JEOPARDY_API.intercom("sound_stop");
     const onLogout = () => {
         JEOPARDY_API.logout();
-        history.push("/");
+        history.push("/admin");
     };
     const onPlayerSelect = (id) => {
         if (game.state === "question_event") setAnswerer(id);
@@ -211,7 +211,7 @@ const JeopardyAdmin = () => {
     return <GameAdmin>
         <Header gameName={"Jeopardy"} token={game.token} stateName={getStatusName(game.state)}>
             <OvalButton onClick={onSoundStop}><i className="fas fa-volume-mute"/></OvalButton>
-            <ButtonLink to={"/"}>Home</ButtonLink>
+            <ButtonLink to={"/admin"}>Home</ButtonLink>
             <ButtonLink to={"/jeopardy/view"}>View</ButtonLink>
             <Button onClick={onLogout}>Logout</Button>
         </Header>
@@ -228,7 +228,7 @@ const JeopardyAdmin = () => {
                                 styles.player, player.id === answerer && styles.selected)}
                             onClick={() => onPlayerSelect(player.id)}
                         >
-                            <div>{player.balance}54645</div>
+                            <div>{player.balance}</div>
                             <div>{player.name}</div>
                         </TwoLineListItem>
                     ))}

@@ -16,8 +16,31 @@ import {
 import {BlockContent, Content, Footer, FooterItem, GameAdmin, Header, TextContent} from "common/Admin";
 import {AdminAuth} from "common/Auth";
 
-import {getStatusName} from "weakest/Common";
 import styles from "weakest/Admin.scss";
+
+
+const getStatusName = (status) => {
+    switch (status) {
+        case 'waiting_for_players':
+            return "Waiting for players";
+        case 'intro':
+            return "Intro";
+        case 'round':
+            return "Round"
+        case 'questions':
+            return "Questions";
+        case 'weakest_choose':
+            return "Weakest choose";
+        case 'weakest_reveal':
+            return "Weakest reveal";
+        case 'final':
+            return "Final";
+        case 'final_questions':
+            return "Final questions";
+        case 'end':
+            return "Game over";
+    }
+}
 
 
 const Question = ({game}) => {
@@ -47,8 +70,8 @@ const WeakestContent = ({game}) => {
 
     return <BlockContent>
         {game.state === "weakest_reveal" && <TextContent>Weakest reveal</TextContent>}
-        <div>{"Weakest: "}{weakest.name}</div>
-        <div>{"Strongest: "}{strongest.name}</div>
+        <div>{"Weakest: "}{weakest.name}, answers: {weakest.right_answers}, income: {weakest.bank_income}</div>
+        <div>{"Strongest: "}{strongest.name}, answers: {strongest.right_answers}, income: {strongest.bank_income}</div>
         <VerticalList className={styles.players}>
             {game.players.filter(player => !player.is_weak).map(player =>
                 <TwoLineListItem key={player.id} className={styles.player}>
@@ -73,6 +96,18 @@ const Players = ({game}) => {
         )}
     </VerticalList>
 };
+
+const ScoreList = ({game}) => {
+    const scores = [1, 2, 5, 10, 15, 20, 30, 40].reverse();
+    return <VerticalList className={styles.scores}>
+        {scores.map(score => <ListItem key={score} className={css(
+            styles.score,
+            game.state === "questions" && game.tmp_score === score && styles.selected
+        )}>
+            {score * game.score_multiplier}
+        </ListItem>)}
+    </VerticalList>
+}
 
 const useStateContent = (game) => {
     switch (game.state) {
@@ -102,26 +137,26 @@ const useControl = (game) => {
     const onFinalAnswererClick = (playerId) => WEAKEST_API.select_final_answerer(playerId);
     const onGongClick = () => WEAKEST_API.intercom("gong");
 
-    const buttons = [<Button onClick={() => onGongClick()}>Gong</Button>];
+    const buttons = [<Button key={1} onClick={() => onGongClick()}>Gong</Button>];
     switch (game.state) {
         case "questions":
         case "final_questions":
             buttons.push([
-                <Button onClick={() => onBankClick()}>Bank</Button>,
-                <Button onClick={() => onAnswerClick(false)}>Wrong</Button>,
-                <Button onClick={() => onAnswerClick(true)}>Right</Button>
+                <Button key={2} onClick={() => onBankClick()}>Bank</Button>,
+                <Button key={3} onClick={() => onAnswerClick(false)}>Wrong</Button>,
+                <Button key={4} onClick={() => onAnswerClick(true)}>Right</Button>
             ]);
             break;
         case "final":
             buttons.push(game.players.filter(player => !player.is_weak).map(player =>
-                    <Button key={player.id} onClick={() => onFinalAnswererClick(player.id)}>{player.name}</Button>,
-                ));
+                <Button key={100 + player.id} onClick={() => onFinalAnswererClick(player.id)}>{player.name}</Button>,
+            ));
             break;
         case "weakest_choose":
         case "end":
             break;
         default:
-            buttons.push(<Button onClick={onNextClick}>Next</Button>);
+            buttons.push(<Button key={5} onClick={onNextClick}>Next</Button>);
     }
     return buttons;
 };
@@ -134,7 +169,7 @@ const WeakestAdmin = () => {
     const onSoundStop = () => WEAKEST_API.intercom("sound_stop");
     const onLogout = () => {
         WEAKEST_API.logout();
-        history.push("/");
+        history.push("/admin");
     };
 
     if (!connected) return <AdminAuth api={WEAKEST_API} setConnected={setConnected}/>;
@@ -143,13 +178,15 @@ const WeakestAdmin = () => {
     return <GameAdmin>
         <Header gameName={"The Weakest"} token={game.token} stateName={getStatusName(game.state)}>
             <OvalButton onClick={onSoundStop}><i className="fas fa-volume-mute"/></OvalButton>
-            <ButtonLink to={"/"}>Home</ButtonLink>
+            <ButtonLink to={"/admin"}>Home</ButtonLink>
             <ButtonLink to={"/weakest/view"}>View</ButtonLink>
             <Button onClick={onLogout}>Logout</Button>
         </Header>
-        <Content rightPanel={<Players game={game}/>}>{useStateContent(game)}</Content>
+        <Content rightPanel={[<Players key={1} game={game}/>, <ScoreList key={2} game={game}/>]}>
+            {useStateContent(game)}
+        </Content>
         <Footer>
-            <FooterItem>{/* empty */}</FooterItem>
+            <FooterItem className={styles.gameScore}>{game.score} ; {game.bank}</FooterItem>
             <FooterItem>{useControl(game)}</FooterItem>
         </Footer>
     </GameAdmin>
