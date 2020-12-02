@@ -29,6 +29,9 @@ const ThemesGrid = ({game}) => (
 
 const QuestionsGrid = ({game, selectedId, onSelect}) => {
     let items = [];
+
+    const maxQuestions = Math.max(...game.themes.map(t => t.questions.length));
+
     game.themes.forEach((theme, themeIndex) => {
         items.push(<Theme key={themeIndex} theme={theme}/>);
         theme.questions.forEach((question, questionIndex) =>
@@ -40,7 +43,7 @@ const QuestionsGrid = ({game, selectedId, onSelect}) => {
         );
     });
 
-    return <div className={styles.questionsGrid}>
+    return <div className={styles.questionsGrid} style={{gridTemplateColumns: `2fr repeat(${maxQuestions}, 1fr)`}}>
         {items}
     </div>
 };
