@@ -102,7 +102,12 @@ const JeopardyView = () => {
         }
     });
 
-    useEffect(loadSounds, []);
+    useEffect(() => {
+        loadSounds();
+        return () => {
+            resetSounds();
+        }
+    }, []);
 
     const [connected, setConnected] = useAuth(JEOPARDY_API);
 

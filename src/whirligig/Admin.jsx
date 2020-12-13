@@ -154,11 +154,14 @@ const useStateContent = (game) => {
         </div>
         <div className={styles.media}>
             <div>{cur_question.description}</div>
+        </div>
+        {(cur_question.text || cur_question.image || cur_question.audio || cur_question.video) &&
+        <div className={styles.media}>
             <div>{cur_question.text && <p>{cur_question.text}</p>}</div>
             <div>{cur_question.image && <ImagePlayer controls={true} game={game} url={cur_question.image}/>}</div>
             <div>{cur_question.audio && <AudioPlayer controls={true} game={game} url={cur_question.audio}/>}</div>
             <div>{cur_question.video && <VideoPlayer controls={true} game={game} url={cur_question.video}/>}</div>
-        </div>
+        </div>}
         <div className={styles.media}>
             <div>{cur_question.answer_description}</div>
             <div>{cur_question.answer_text && <p>{cur_question.answer_text}</p>}</div>

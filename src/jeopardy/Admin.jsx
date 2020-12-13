@@ -21,12 +21,18 @@ import styles from "jeopardy/Admin.scss";
 
 const QuestionEvent = ({question}) => {
     const {
-        type, custom_theme, value
+        type, theme, custom_theme, value
     } = question;
+    let themeDiv = null;
+    if (custom_theme) {
+        themeDiv = <div>Custom theme: {custom_theme}</div>;
+    } else {
+        themeDiv = <div>Theme: {theme}</div>;
+    }
     return <BlockContent>
         <div>
             <div className={styles.type}>{getTypeName(type)}</div>
-            {custom_theme && <div>Custom theme: {custom_theme}</div>}
+            {themeDiv}
             <div>Value: {value}</div>
         </div>
     </BlockContent>

@@ -30,6 +30,7 @@ const App = () => {
         <Switch>
             <Route exact path="/" component={MainPage}/>
             <Route exact path="/admin" component={AdminPage}/>
+
             <Route exact path="/whirligig/admin" component={WhirligigAdmin}/>
             <Route exact path="/whirligig/view" component={WhirligigView}/>
 

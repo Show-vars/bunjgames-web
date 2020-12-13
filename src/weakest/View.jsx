@@ -101,7 +101,12 @@ const WeakestView = () => {
         }
     });
 
-    useEffect(loadSounds, []);
+    useEffect(() => {
+        loadSounds();
+        return () => {
+            stopMusic();
+        }
+    }, []);
 
     const [connected, setConnected] = useAuth(WEAKEST_API);
 

@@ -22,7 +22,7 @@ const Music = {
     intro: HowlWrapper('/sounds/whirligig/intro.mp3'),
     questions: HowlWrapper('/sounds/whirligig/questions.mp3'),
     whirligig: HowlWrapper('/sounds/whirligig/whirligig.mp3'),
-    end_defeat: HowlWrapper('/sounds/whirligig/end_defeat.mp3'),
+    end: HowlWrapper('/sounds/whirligig/end_defeat.mp3'),
     end_victory: HowlWrapper('/sounds/whirligig/end_victory.mp3'),
     black_box: HowlWrapper('/sounds/whirligig/black_box.mp3'),
 }
@@ -65,9 +65,9 @@ const QuestionMessage = ({game, text, image, audio, video}) => {
     return <div className={styles.media}>
         {text && <div><p>{text}</p></div>}
         {image && <div><ImagePlayer autoPlay game={game} url={image}/></div>}
-        {["question_start", "answer"].includes(game.state) && audio &&
+        {["question_start", "right_answer"].includes(game.state) && audio &&
         <div><AudioPlayer controls autoPlay={true} game={game} url={audio}/></div>}
-        {["question_start", "answer"].includes(game.state) && video &&
+        {["question_start", "right_answer"].includes(game.state) && video &&
         <div><VideoPlayer controls autoPlay={true} game={game} url={video}/></div>}
     </div>
 }
@@ -132,11 +132,7 @@ const WhirligigView = () => {
                 QuestionsEndMusic.current = (QuestionsEndMusic.current + 1) % QuestionsEndMusic.music.length;
             } break;
             case "end": {
-                if(game.connoisseurs_score > game.viewers_score) {
-                    Music.end_victory.play();
-                } else {
-                    Music.end_defeat.play();
-                }
+                Music.end.play();
             } break;
         }
     }, (message) => {
@@ -150,7 +146,12 @@ const WhirligigView = () => {
         }
     });
 
-    useEffect(loadSounds, []);
+    useEffect(() => {
+        loadSounds();
+        return () => {
+            resetSounds();
+        }
+    }, []);
 
     useEffect(() => {
         if (!game) return;
