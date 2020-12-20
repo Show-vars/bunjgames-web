@@ -7,7 +7,7 @@ export default class GameApi {
     constructor(apiEndpoint, wsEndpoint, tokenName) {
         this.axios = axios.create({
             baseURL: apiEndpoint,
-            timeout: 10000
+            timeout: 300000
         });
 
         this.wsEndpoint = wsEndpoint;
