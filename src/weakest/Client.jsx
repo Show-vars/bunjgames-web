@@ -37,7 +37,7 @@ const useStateContent = (game) => {
 
     switch (game.state) {
         case "questions":
-            return <BigButtonContent active={buttonActive} onClick={onBank}>Bank</BigButtonContent>
+            return <BigButtonContent active={buttonActive} onClick={onBank}>Bank ({game.tmp_score})</BigButtonContent>
         case "weakest_choose":
             return <Players game={game} player={player} onClick={onPlayerSelect}/>
         case "end":

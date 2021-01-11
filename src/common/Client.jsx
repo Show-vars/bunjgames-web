@@ -3,7 +3,13 @@ import {Toast} from "common/Essentials";
 import styles from "common/Client.scss";
 
 const ExitButton = ({onClick}) => (
-    <a className={styles.exit} onClick={onClick}><i className="fas fa-times-circle"/></a>
+    <a className={styles.exit} onClick={() => {
+        if(confirm("Are you sure want to exit?")){
+            onClick();
+        } else {
+            e.preventDefault();
+        }
+    }}><i className="fas fa-times-circle"/></a>
 )
 
 const Header = ({children}) => (
