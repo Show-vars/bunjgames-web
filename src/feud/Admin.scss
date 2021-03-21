@@ -1,6 +1,10 @@
 @import "src/Colors";
 
-.players {
+.question {
+  padding: 12px 12px;
+}
+
+.teams {
   padding: 12px 12px;
 
   overflow-y: scroll;
@@ -13,35 +17,12 @@
   min-height: 0;
 }
 
-.player {
+.team {
   background-color: $baseBackgroundButton;
 
   font-size: 22px;
   margin-bottom: 5px;
   padding: 5px;
-
-  &.selected {
-    background-color: $baseBackgroundSelect !important;
-    color: $baseTextColorSelect;
-  }
-
-  &.weak {
-    color: $baseTextColorGray;
-  }
-}
-
-.scores {
-  border-top: 10px solid #333435;
-  padding: 12px 12px;
-  align-items: center;
-}
-
-.score {
-  background-color: $baseBackgroundButton;
-  font-size: 18px;
-  margin-bottom: 5px;
-  padding: 5px;
-  min-width: 150px;
 
   &.selected {
     background-color: $baseBackgroundSelect !important;

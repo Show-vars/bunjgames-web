@@ -1,0 +1,60 @@
+@import "src/common/Essentials";
+
+.grid {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-gap: 10px;
+  height: 100%;
+  width: 100%;
+}
+
+.cell {
+  text-transform: capitalize;
+  font-size: 38px;
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.question {
+  grid-column: 1 / 3;
+  margin-bottom: 10px;
+  color: $baseTextColor;
+}
+
+.answer {
+  background-color: $baseBackgroundDark;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: $baseTextColorGray;
+
+  &.opened {
+    color: $baseTextColor;
+  }
+
+  &.active {
+    cursor: pointer;
+    &:active {
+      transform: translateY(5px);
+    }
+  }
+
+}
+
+.value {
+  background-color: $baseBackgroundDark;
+
+  font-weight: bold;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+}
+
+

@@ -128,6 +128,11 @@ const useTimer = (api, onTimerEnd) => {
     return time;
 }
 
+const calcStateName = (state) => {
+    const value = state.replaceAll("_", " ");
+    return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 export {
     HowlWrapper,
     ImagePlayer, AudioPlayer, VideoPlayer,
@@ -135,5 +140,6 @@ export {
     Button, OvalButton, ButtonLink,
     Input,
     VerticalList, HorizontalList, ListItem, TwoLineListItem,
-    useGame, useAuth, useTimer
+    useGame, useAuth, useTimer,
+    calcStateName
 }

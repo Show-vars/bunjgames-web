@@ -43,9 +43,10 @@ module.exports = {
       common: src('common'),
       core: src(''),
       info: src('info'),
+      whirligig: src('whirligig'),
       jeopardy: src('jeopardy'),
       weakest: src('weakest'),
-      whirligig: src('whirligig'),
+      feud: src('feud'),
     },
     extensions: ['.js', '.jsx']
   },

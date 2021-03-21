@@ -34,6 +34,15 @@ const MainPage = () => {
                 A contestant's decision not to bank, in anticipation being able to correctly answer the upcoming question
                 allows the money to grow, as each successive correct answer earns proportionally more money.</div>
         </div>
+        <div className={styles.category}>
+            <div className={styles.subtitle}><Link to={'/feud/client'}>Friends Feud</Link></div>
+            <div>The team with control of the question then tries to win the round by guessing all of the remaining concealed answers,
+                with each member giving one answer in sequence. Giving an answer not on the board, or failing to respond within the allotted time,
+                earns one strike. If the team earns three strikes, their opponents are given one chance to "steal" the points for the round
+                by guessing any remaining concealed answer; failing to do so awards the points back to the family that originally had control.
+                If the opponents are given the opportunity to "steal" the points, then only their team's captain is required to answer the question.
+                Any remaining concealed answers on the board that were not guessed are then revealed.</div>
+        </div>
     </div>
 }
 
@@ -57,6 +66,11 @@ const AdminPage = () => {
             <div className={styles.subtitle}>The Weakest:</div>
             <div><Link to={'/weakest/admin'}>Admin panel</Link></div>
             <div><Link to={'/weakest/view'}>View</Link></div>
+        </div>
+        <div className={styles.category}>
+            <div className={styles.subtitle}>Friends Feud:</div>
+            <div><Link to={'/feud/admin'}>Admin panel</Link></div>
+            <div><Link to={'/feud/view'}>View</Link></div>
         </div>
     </div>
 }

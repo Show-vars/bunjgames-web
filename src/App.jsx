@@ -10,18 +10,23 @@ import WhirligigView from "./whirligig/View.jsx";
 import WhirligigApi from "./whirligig/WhirligigApi.js";
 import JeopardyApi from "./jeopardy/JeopardyApi.js";
 import WeakestApi from "./weakest/WeakestApi.js";
+import FeudApi from "./feud/FeudApi.js";
 import JeopardyAdmin from "./jeopardy/Admin.jsx";
 import JeopardyView from "./jeopardy/View.jsx";
 import JeopardyClient from "./jeopardy/Client.jsx";
 import WeakestAdmin from "./weakest/Admin.jsx";
 import WeakestView from "./weakest/View.jsx";
 import WeakestClient from "./weakest/Client.jsx";
+import FeudAdmin from "./feud/Admin.jsx";
+import FeudView from "./feud/View.jsx";
+import FeudClient from "./feud/Client.jsx";
 
 require("./Polyfils.js");
 
 window.WHIRLIGIG_API = new WhirligigApi(BunjGamesConfig.WHIRLIGIG_API_ENDPOINT, BunjGamesConfig.WHIRLIGIG_WS_ENDPOINT);
 window.JEOPARDY_API = new JeopardyApi(BunjGamesConfig.JEOPARDY_API_ENDPOINT, BunjGamesConfig.JEOPARDY_WS_ENDPOINT);
 window.WEAKEST_API = new WeakestApi(BunjGamesConfig.WEAKEST_API_ENDPOINT, BunjGamesConfig.WEAKEST_WS_ENDPOINT);
+window.FEUD_API = new FeudApi(BunjGamesConfig.FEUD_API_ENDPOINT, BunjGamesConfig.FEUD_WS_ENDPOINT);
 
 Howler.volume(0.5);
 
@@ -41,6 +46,10 @@ const App = () => {
             <Route exact path="/weakest/admin" component={WeakestAdmin}/>
             <Route exact path="/weakest/view" component={WeakestView}/>
             <Route exact path="/weakest/client" component={WeakestClient}/>
+
+            <Route exact path="/feud/admin" component={FeudAdmin}/>
+            <Route exact path="/feud/view" component={FeudView}/>
+            <Route exact path="/feud/client" component={FeudClient}/>
         </Switch>
     </BrowserRouter>
 };
