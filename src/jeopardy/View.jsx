@@ -35,7 +35,7 @@ const resetSounds = () => {
 
 const QuestionMessage = ({game, text, image, audio, video}) => {
     return <div className={styles.media}>
-        {text && <p>{text}</p>}
+        {text && !image && !video && <p>{text}</p>}
         {image && <ImagePlayer autoPlay game={game} url={image}/>}
         {audio && <AudioPlayer controls autoPlay={true} game={game} url={audio}/>}
         {video && <VideoPlayer controls autoPlay={true} game={game} url={video}/>}

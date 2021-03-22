@@ -90,9 +90,11 @@ const Items = ({items}) => (
 
 const Timer = ({game}) => {
     const time = useTimer(WHIRLIGIG_API, () => {
-        if (game.state === "question_discussion") {
-            WHIRLIGIG_API.nextState(game.state);
-        }
+        setTimeout(() => {
+            if (game.state === "question_discussion") {
+                WHIRLIGIG_API.nextState(game.state);
+            }
+        }, 2000);
     });
     const onPause = () => WHIRLIGIG_API.timer(!game.timer_paused);
 
