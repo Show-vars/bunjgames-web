@@ -68,7 +68,10 @@ const useStateContent = (game) => {
         case "button":
         case "answers":
         case "answers_reveal":
-            return <Question question={game.question} className={styles.question} onSelect={onAnswerClick}/>;
+        case "final_questions":
+            return <Question
+                game={game} showHiddenAnswers={true} className={styles.question} onSelect={onAnswerClick}
+            />;
         default:
             return <TextContent>{getStateName(game.state)}</TextContent>;
     }
@@ -94,9 +97,11 @@ const useControl = (game) => {
             break;
         case "final":
             buttons.push(<Button key={1} onClick={() => onRepeatClick()}>Repeat</Button>)
+            buttons.push(<Button key={5} onClick={onNextClick}>Next</Button>);
             break;
         case "final_questions":
             buttons.push(<Button key={1} onClick={() => onRepeatClick()}>Repeat</Button>)
+            buttons.push(<Button key={2} onClick={() => onWrongAnswerClick()}>Wrong</Button>)
             break;
         case "end":
             break;
