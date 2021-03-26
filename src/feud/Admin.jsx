@@ -18,7 +18,7 @@ import {BlockContent, Content, Footer, FooterItem, GameAdmin, Header, TextConten
 import {AdminAuth} from "common/Auth";
 
 import styles from "feud/Admin.scss";
-import {Question} from "feud/Question";
+import {FinalQuestions, Question} from "feud/Question";
 
 
 const states = [
@@ -72,6 +72,8 @@ const useStateContent = (game) => {
             return <Question
                 game={game} showHiddenAnswers={true} className={styles.question} onSelect={onAnswerClick}
             />;
+        case "final_questions_reveal":
+            return <FinalQuestions game={game} className={styles.question} />
         default:
             return <TextContent>{getStateName(game.state)}</TextContent>;
     }
@@ -113,6 +115,11 @@ const useControl = (game) => {
 
 const gameScore = (game) => {
     if (game.teams.length < 2) return "";
+    if (game.answerer && (game.state === 'final' || game.state === 'final_questions'
+        || game.state === 'final_questions_reveal')) {
+        const answerer = game.answerer && game.teams.find(t => t.id === game.answerer);
+        return answerer.final_score;
+    }
     return game.teams[0].score + " : " + game.teams[1].score;
 }
 

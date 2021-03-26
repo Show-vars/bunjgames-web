@@ -9,6 +9,15 @@
   width: 100%;
 }
 
+.finalQuestionsGrid {
+  display: grid;
+  grid-template-columns: 3fr 2fr 1fr;
+  grid-auto-rows: 1fr;
+  grid-gap: 10px;
+  height: 100%;
+  width: 100%;
+}
+
 .cell {
   text-transform: capitalize;
   font-size: 38px;

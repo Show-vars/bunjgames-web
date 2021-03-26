@@ -1,19 +1,16 @@
 import React, {useEffect, useState} from "react";
 import {Loading, useGame, useAuth, useTimer, HowlWrapper} from "common/Essentials";
 import {AdminAuth} from "common/Auth";
-import {Content, GameView, TextContent, BlockContent} from "common/View";
+import {Content, GameView, TextContent} from "common/View";
+import {FinalQuestions, Question} from "feud/Question";
 
 const Music = {
-    intro: HowlWrapper('/sounds/feud/intro.mp3'),
-    background: HowlWrapper('/sounds/feud/background.ogg', true, 0.5),
-    questions: HowlWrapper('/sounds/feud/questions.ogg', true, 0.5),
 }
 
 const Sounds = {
     gong: HowlWrapper('/sounds/weakest/gong.ogg'),
-    question_start: HowlWrapper('/sounds/weakest/question_start.ogg'),
-    question_end: HowlWrapper('/sounds/weakest/question_end.ogg'),
-    weakest_reveal: HowlWrapper('/sounds/weakest/weakest_reveal.mp3', false, 0.5),
+    reveal: HowlWrapper('/sounds/weakest/weakest_reveal.mp3', false, 0.5),
+
 }
 
 const loadSounds = () => {
@@ -41,32 +38,26 @@ const Timer = () => {
     return <TextContent>{timeStr}</TextContent>
 }
 
-const FinalQuestions = ({game}) => {
-    return <BlockContent>
-        {game.players.filter(player => !player.is_weak).map(player =>
-            <div key={player.id}>{player.name} : {player.right_answers}</div>
-        )}
-    </BlockContent>;
-}
-
 const useStateContent = (game) => {
+    const answerer = game.answerer && game.teams.find(t => t.id === game.answerer);
     switch (game.state) {
-        case "waiting_for_players":
+        case "waiting_for_teams":
             return <TextContent>{game.token}</TextContent>;
         case "round":
             return <TextContent>Round {game.round}</TextContent>;
-        case "questions":
-            return <Timer/>;
-        case "weakest_choose":
-            return <TextContent>Choose the Weakest</TextContent>;
-        case "weakest_reveal":
-            return <TextContent>{game.players.find(p => p.id === game.weakest).name}</TextContent>;
+        case "button":
+        case "answers":
+        case "answers_reveal":
+        case "final_questions":
+            return <Question
+                game={game} showHiddenAnswers={false}
+            />;
         case "final":
             return <TextContent>Final</TextContent>;
-        case "final_questions":
+        case "final_questions_reveal":
             return <FinalQuestions game={game}/>;
         case "end":
-            return <TextContent>Game over</TextContent>;
+            return <TextContent>{answerer.score}</TextContent>;
         default:
             return <TextContent>Friends Feud</TextContent>
     }
@@ -75,25 +66,13 @@ const useStateContent = (game) => {
 const FeudView = () => {
     const [music, setMusic] = useState();
     const game = useGame(FEUD_API, (game) => {
-        if (["intro"].includes(game.state)) {
-            setMusic(changeMusic(music, "intro"));
-        } else if (["questions", "final_questions"].includes(game.state)) {
-            setMusic(changeMusic(music, "questions"));
-        } else {
-            setMusic(changeMusic(music, "background"));
-        }
-
-        if (["questions", "final_questions"].includes(game.state)) {
-            Sounds.question_start.play();
-        } else if (["weakest_reveal"].includes(game.state)) {
-            Sounds.weakest_reveal.play();
-        } else if (["weakest_choose", "end"].includes(game.state)) {
-            Sounds.question_end.play();
-        }
     }, (message) => {
         switch (message) {
             case "gong":
                 Sounds.gong.play();
+                break;
+            case "reveal":
+                Sounds.reveal.play();
                 break;
             case "sound_stop":
                 setMusic(changeMusic(music, ""));
