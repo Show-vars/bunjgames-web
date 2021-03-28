@@ -6,27 +6,27 @@ const Question = ({game, showHiddenAnswers, className, onSelect}) => {
     const answers = [];
     let strikesContainersCount = 0;
     game.question.answers.forEach((answer, index) => {
+        let isAnswerOpened = (game.state !== "final_questions") ? answer.is_opened : answer.is_final_answered
         answers.push(
             <div key={'answer_' + index}
-                 onClick={() => onSelect(answer.id)}
+                 onClick={() => !isAnswerOpened && onSelect(answer.id)}
                  className={css(
-                    answer.is_opened && styles.opened,
-                    !answer.is_opened && onSelect ? styles.active : null,
+                    isAnswerOpened && styles.opened,
+                    !isAnswerOpened && onSelect ? styles.active : null,
                     styles.cell, styles.answer
                  )}
             >
-                {(answer.is_opened || showHiddenAnswers) && answer.text}
+                {(isAnswerOpened || showHiddenAnswers) && answer.text}
             </div>
         );
         answers.push(
             <div
                 key={'value_' + index}
                 className={css(
-                    answer.is_opened && styles.opened,
-                    styles.cell, styles.value
+                    isAnswerOpened && styles.opened, styles.cell, styles.value
                 )}
             >
-                {(answer.is_opened || showHiddenAnswers) && answer.value}
+                {(isAnswerOpened || showHiddenAnswers) && answer.value}
             </div>
         );
         if (answerer && strikesContainersCount < 3) {
@@ -60,18 +60,18 @@ const FinalQuestions = ({game, className}) => {
     game.final_questions.forEach((question, index) => {
         answers.push(
             <div key={'question_' + index} className={css(styles.cell, styles.answer, styles.opened)}>
-                {question.text}
+                {!question.is_processed && question.text}
             </div>
         );
         let answer = question.answers.length ? question.answers[0] : null;
         answers.push(
             <div key={'answer_' + index} className={css(styles.cell, styles.answer, styles.opened)}>
-                { answer ? answer.text : "-" }
+                {!question.is_processed && (answer ? answer.text : "-")}
             </div>
         );
         answers.push(
             <div key={'value_' + index} className={css(styles.cell, styles.value, styles.opened)}>
-                { answer ? answer.value : "0" }
+                {!question.is_processed && (answer ? answer.value : "0")}
             </div>
         );
     });

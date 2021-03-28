@@ -2,7 +2,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 3fr 1fr 1fr;
+  grid-template-columns: 3fr 1fr 0.7fr;
   grid-auto-rows: 1fr;
   grid-gap: 10px;
   height: 100%;
@@ -19,7 +19,6 @@
 }
 
 .cell {
-  text-transform: capitalize;
   font-size: 38px;
   text-align: center;
 

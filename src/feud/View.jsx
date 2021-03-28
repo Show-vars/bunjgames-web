@@ -3,14 +3,21 @@ import {Loading, useGame, useAuth, useTimer, HowlWrapper} from "common/Essential
 import {AdminAuth} from "common/Auth";
 import {Content, GameView, TextContent} from "common/View";
 import {FinalQuestions, Question} from "feud/Question";
+import styles from "feud/View.scss";
 
 const Music = {
+    intro: HowlWrapper('/sounds/feud/intro.mp3', false, 0.5),
+    round: HowlWrapper('/sounds/feud/round.mp3', false, 0.5),
+    beat: HowlWrapper('/sounds/feud/beat.mp3', false, 0.5),
+    timer: HowlWrapper('/sounds/feud/timer.mp3', false, 0.5),
+    end: HowlWrapper('/sounds/feud/end.mp3', false, 0.5),
 }
 
 const Sounds = {
-    gong: HowlWrapper('/sounds/weakest/gong.ogg'),
-    reveal: HowlWrapper('/sounds/weakest/weakest_reveal.mp3', false, 0.5),
-
+    button: HowlWrapper('/sounds/feud/button.mp3'),
+    repeat: HowlWrapper('/sounds/feud/repeat.mp3'),
+    right: HowlWrapper('/sounds/feud/right.mp3'),
+    wrong: HowlWrapper('/sounds/feud/wrong.mp3'),
 }
 
 const loadSounds = () => {
@@ -50,14 +57,14 @@ const useStateContent = (game) => {
         case "answers_reveal":
         case "final_questions":
             return <Question
-                game={game} showHiddenAnswers={false}
+                game={game} className={styles.question} showHiddenAnswers={false}
             />;
         case "final":
             return <TextContent>Final</TextContent>;
         case "final_questions_reveal":
-            return <FinalQuestions game={game}/>;
+            return <FinalQuestions game={game} className={styles.question}/>;
         case "end":
-            return <TextContent>{answerer.score}</TextContent>;
+            return <TextContent>{answerer.score > 200 ? answerer.score : 0}</TextContent>;
         default:
             return <TextContent>Friends Feud</TextContent>
     }
@@ -66,13 +73,32 @@ const useStateContent = (game) => {
 const FeudView = () => {
     const [music, setMusic] = useState();
     const game = useGame(FEUD_API, (game) => {
+        if (game.state === "intro") {
+            setMusic(changeMusic(music, "intro"));
+        } else if (game.state === "round") {
+            setMusic(changeMusic(music, "round"));
+        } else if (game.state === "answers") {
+            setMusic(changeMusic(music, "beat"));
+        } else if (game.state === "final_questions") {
+            setMusic(changeMusic(music, "timer"));
+        } else if (game.state === "final_questions_reveal") {
+            stopMusic();
+        } else if (game.state === "end") {
+            setMusic(changeMusic(music, "end"));
+        }
     }, (message) => {
         switch (message) {
-            case "gong":
-                Sounds.gong.play();
+            case "button":
+                Sounds.button.play();
                 break;
-            case "reveal":
-                Sounds.reveal.play();
+            case "repeat":
+                Sounds.repeat.play();
+                break;
+            case "right":
+                Sounds.right.play();
+                break;
+            case "wrong":
+                Sounds.wrong.play();
                 break;
             case "sound_stop":
                 setMusic(changeMusic(music, ""));

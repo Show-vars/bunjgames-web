@@ -11,10 +11,9 @@ import {
     ListItem,
     useTimer,
     OvalButton,
-    TwoLineListItem,
     calcStateName
 } from "common/Essentials"
-import {BlockContent, Content, Footer, FooterItem, GameAdmin, Header, TextContent} from "common/Admin";
+import {Content, Footer, FooterItem, GameAdmin, Header, TextContent} from "common/Admin";
 import {AdminAuth} from "common/Auth";
 
 import styles from "feud/Admin.scss";
@@ -84,7 +83,7 @@ const useControl = (game) => {
     const onSetAnswererClick = (teamId) => FEUD_API.set_answerer(teamId);
     const onWrongAnswerClick = () => FEUD_API.answer(false, 0);
 
-    const onRepeatClick = () => FEUD_API.intercom("gong");
+    const onRepeatClick = () => FEUD_API.intercom("repeat");
 
     const buttons = [];
     switch (game.state) {
@@ -116,9 +115,9 @@ const useControl = (game) => {
 const gameScore = (game) => {
     if (game.teams.length < 2) return "";
     if (game.answerer && (game.state === 'final' || game.state === 'final_questions'
-        || game.state === 'final_questions_reveal')) {
+        || game.state === 'final_questions_reveal' || game.state === 'end')) {
         const answerer = game.answerer && game.teams.find(t => t.id === game.answerer);
-        return answerer.final_score;
+        return answerer.score + " | " + answerer.final_score;
     }
     return game.teams[0].score + " : " + game.teams[1].score;
 }
